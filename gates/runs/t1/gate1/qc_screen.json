@@ -1,0 +1,63 @@
+{
+  "groups": {
+    "deepseek": {
+      "responses": 2999,
+      "empty_rate": 0.0,
+      "refusal_rate": 0.018,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.022,
+      "truncated_rate": 0.034,
+      "mean_output_tokens": 98.8
+    },
+    "gemma": {
+      "responses": 3000,
+      "empty_rate": 0.0,
+      "refusal_rate": 0.023,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.028,
+      "truncated_rate": 0.023,
+      "mean_output_tokens": 117.5
+    },
+    "gemma::idea_shift": {
+      "responses": 3000,
+      "empty_rate": 0.0,
+      "refusal_rate": 0.02,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.0,
+      "truncated_rate": 0.021,
+      "mean_output_tokens": 117.6
+    },
+    "gemma::paraphrase": {
+      "responses": 2999,
+      "empty_rate": 0.0,
+      "refusal_rate": 0.0,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.011,
+      "truncated_rate": 0.017,
+      "mean_output_tokens": 120.4
+    },
+    "glm": {
+      "responses": 3000,
+      "empty_rate": 0.001,
+      "refusal_rate": 0.015,
+      "reasoning_rate": 0.027,
+      "exact_duplicate_rate": 0.015,
+      "truncated_rate": 0.052,
+      "mean_output_tokens": 203.3
+    },
+    "gpt_oss": {
+      "responses": 3000,
+      "empty_rate": 0.001,
+      "refusal_rate": 0.008,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.096,
+      "truncated_rate": 0.01,
+      "mean_output_tokens": 172.1
+    }
+  },
+  "usable_prompts": 96,
+  "total_prompts": 100,
+  "problems": [
+    "glm: 3% reasoning without an answer, dropped from every measurement"
+  ]
+}

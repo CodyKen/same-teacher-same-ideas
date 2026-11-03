@@ -1,0 +1,20 @@
+{
+ "purpose": "Content-level example for the proposal's Task paragraph",
+ "prompt_id_prefix": "daeb7ddc",
+ "judge_model": "glm (GLM-5.2), temperature 0",
+ "judge_prompt_source": "\n    \"Question: \" + QUESTION + \"\\n\\nAnswer:\\n{answer}\\n\\n\"\n    \"Which describes the main idea of the answer?\\n\"\n    \"A. It reads the events of the season as symbols or metaphors for Gendry's inner life, \"\n    \"such as his guilt, trauma, identity, longing or inner conflict.\\n\"\n    \"B. It does not. It retells which events Gendry imagined, or what follows for the story \"\n    \"(for example he wakes up still rowing, nothing really happened, or it explains the plot).\\n\"\n    \"Reply with the single letter A or B.\"",
+ "label_A": "reads the season's events as symbols of Gendry's inner life",
+ "counts_A_of_30": {
+  "teacher gemma": 28,
+  "teacher deepseek": 0,
+  "X__gemma__s0": 26,
+  "X__gemma__s1": 28,
+  "Y__gemma__s0": 30,
+  "Y__gemma__s1": 30,
+  "X__deepseek__s0": 10,
+  "X__deepseek__s1": 13,
+  "Y__deepseek__s0": 13,
+  "Y__deepseek__s1": 11
+ },
+ "date": "2026-11-03"
+}

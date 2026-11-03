@@ -1,0 +1,139 @@
+{
+  "declared": [
+    "drop prompts where any teacher refuses at least 10% of the time",
+    "leave one teacher out",
+    "drop the 10 prompts with the largest gap",
+    "gemma and gpt_oss rewrite each other's answers, splitting distance into voice and ideas"
+  ],
+  "robustness": {
+    "all": {
+      "prompts": 97,
+      "estimate": 0.6220610304962957,
+      "ci_low": 0.45164315520011167,
+      "ci_high": 0.8176738459373444
+    },
+    "without_refusing_prompts": {
+      "prompts": 94,
+      "estimate": 0.5758868092201742,
+      "ci_low": 0.4176175684594659,
+      "ci_high": 0.7263025689046877
+    },
+    "without_top_gaps": {
+      "prompts": 87,
+      "estimate": 0.5023543915126008,
+      "ci_low": 0.3544390558331471,
+      "ci_high": 0.648033482719572
+    },
+    "without deepseek": {
+      "prompts": 97,
+      "estimate": 0.6372951904302266,
+      "ci_low": 0.4643340783856164,
+      "ci_high": 0.8495752790848361
+    },
+    "without gemma": {
+      "prompts": 97,
+      "estimate": 0.5038167417889174,
+      "ci_low": 0.30732621849417724,
+      "ci_high": 0.7318513272673889
+    },
+    "without glm": {
+      "prompts": 97,
+      "estimate": 0.8687653510702884,
+      "ci_low": 0.6745611601304002,
+      "ci_high": 1.1119140850052476
+    },
+    "without gpt_oss": {
+      "prompts": 97,
+      "estimate": 0.47836683869575036,
+      "ci_low": 0.3171207109097996,
+      "ci_high": 0.6453412828554302
+    },
+    "pair deepseek vs gemma": {
+      "prompts": 97,
+      "estimate": 0.8370047977942469,
+      "ci_low": 0.6367483923469939,
+      "ci_high": 1.059733285061876
+    },
+    "pair deepseek vs glm": {
+      "prompts": 97,
+      "estimate": 0.20432389566363782,
+      "ci_low": 0.0005423936723861875,
+      "ci_high": 0.3776235754803729
+    },
+    "pair deepseek vs gpt_oss": {
+      "prompts": 97,
+      "estimate": 0.7791519182292087,
+      "ci_low": 0.5356280090492483,
+      "ci_high": 1.091926535000185
+    },
+    "pair gemma vs glm": {
+      "prompts": 97,
+      "estimate": 0.39377182262936594,
+      "ci_low": 0.2349306589763909,
+      "ci_high": 0.5572477584165241
+    },
+    "pair gemma vs gpt_oss": {
+      "prompts": 97,
+      "estimate": 0.9901393371874097,
+      "ci_low": 0.7665812750509625,
+      "ci_high": 1.2815550616077358
+    },
+    "pair glm vs gpt_oss": {
+      "prompts": 97,
+      "estimate": 0.5279744114739047,
+      "ci_low": 0.31681035303871874,
+      "ci_high": 0.810487149466272
+    }
+  },
+  "voice_split": {
+    "pair": [
+      "gemma",
+      "gpt_oss"
+    ],
+    "prompts": 97,
+    "mean_energy": {
+      "total": 0.3955326751327196,
+      "voice gemma to gpt_oss": 0.14716419591333818,
+      "ideas in gpt_oss voice": 0.3805774680840802,
+      "voice gpt_oss to gemma": 0.12550303026553544,
+      "ideas in gemma voice": 0.4116245315281246,
+      "style": 0.13299447026870106,
+      "idea": 0.39242065030159906
+    },
+    "voice gemma to gpt_oss / total": {
+      "estimate": 0.37206583720032166,
+      "ci_low": 0.28983772847299355,
+      "ci_high": 0.47078841881851274
+    },
+    "ideas in gpt_oss voice / total": {
+      "estimate": 0.9621897052029362,
+      "ci_low": 0.9150575266040095,
+      "ci_high": 1.0151902681608393
+    },
+    "voice gpt_oss to gemma / total": {
+      "estimate": 0.31730129558429865,
+      "ci_low": 0.2476229181857525,
+      "ci_high": 0.3950038456623526
+    },
+    "ideas in gemma voice / total": {
+      "estimate": 1.0406840127430823,
+      "ci_low": 0.9763083257827269,
+      "ci_high": 1.113235167824328
+    },
+    "calibrated total": {
+      "estimate": 1.0119958010048407,
+      "ci_low": 0.7863684387965983,
+      "ci_high": 1.3047656601009137
+    },
+    "calibrated ideas in gemma voice": {
+      "estimate": 1.0740244536002124,
+      "ci_low": 0.8780851511180445,
+      "ci_high": 1.3299754377637436
+    },
+    "calibrated ideas in gpt_oss voice": {
+      "estimate": 0.9543485464110948,
+      "ci_low": 0.739534866141566,
+      "ci_high": 1.2445315871409839
+    }
+  }
+}

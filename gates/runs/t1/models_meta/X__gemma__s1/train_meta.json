@@ -1,0 +1,11 @@
+{
+  "base_model": "Qwen/Qwen3-4B-Base",
+  "train_file": "/home/lvxuanyi/gates/runs/t1/train/gemma_rep1.jsonl",
+  "train_sha256": "92185516920638acdf52122e7dd88f7b52a94f60d0336167b6f66cfd15f11c70",
+  "examples": 4938,
+  "seed": 1,
+  "max_steps": 600,
+  "final_loss": 0.9292246699333191,
+  "seconds": 1196.7,
+  "device": "cuda"
+}

@@ -1,0 +1,204 @@
+{
+  "description": "Mean energy distance (all-mpnet-base-v2) between every pair of pilot students and teachers, averaged over the prompts the 2x2 analysis used, with the same per-prompt word budget.",
+  "prompts_used": 97,
+  "order": [
+    "X__deepseek__s0",
+    "X__deepseek__s1",
+    "X__gemma__s0",
+    "X__gemma__s1",
+    "Y__deepseek__s0",
+    "Y__deepseek__s1",
+    "Y__gemma__s0",
+    "Y__gemma__s1",
+    "teacher deepseek",
+    "teacher gemma"
+  ],
+  "mean_energy_matrix": [
+    [
+      0.0,
+      0.0084,
+      0.0754,
+      0.0808,
+      0.0737,
+      0.0743,
+      0.133,
+      0.1294,
+      0.2172,
+      0.3364
+    ],
+    [
+      0.0084,
+      0.0,
+      0.0757,
+      0.0781,
+      0.0711,
+      0.0701,
+      0.1329,
+      0.1302,
+      0.2119,
+      0.3376
+    ],
+    [
+      0.0754,
+      0.0757,
+      0.0,
+      0.0119,
+      0.1212,
+      0.1216,
+      0.0785,
+      0.074,
+      0.2588,
+      0.266
+    ],
+    [
+      0.0808,
+      0.0781,
+      0.0119,
+      0.0,
+      0.1288,
+      0.1298,
+      0.0793,
+      0.0751,
+      0.2633,
+      0.262
+    ],
+    [
+      0.0737,
+      0.0711,
+      0.1212,
+      0.1288,
+      0.0,
+      0.0072,
+      0.0937,
+      0.0932,
+      0.2156,
+      0.353
+    ],
+    [
+      0.0743,
+      0.0701,
+      0.1216,
+      0.1298,
+      0.0072,
+      0.0,
+      0.0922,
+      0.0918,
+      0.2188,
+      0.3528
+    ],
+    [
+      0.133,
+      0.1329,
+      0.0785,
+      0.0793,
+      0.0937,
+      0.0922,
+      0.0,
+      0.0094,
+      0.282,
+      0.2914
+    ],
+    [
+      0.1294,
+      0.1302,
+      0.074,
+      0.0751,
+      0.0932,
+      0.0918,
+      0.0094,
+      0.0,
+      0.2842,
+      0.2892
+    ],
+    [
+      0.2172,
+      0.2119,
+      0.2588,
+      0.2633,
+      0.2156,
+      0.2188,
+      0.282,
+      0.2842,
+      0.0,
+      0.3831
+    ],
+    [
+      0.3364,
+      0.3376,
+      0.266,
+      0.262,
+      0.353,
+      0.3528,
+      0.2914,
+      0.2892,
+      0.3831,
+      0.0
+    ]
+  ],
+  "surface": {
+    "X__deepseek__s0": {
+      "answers": 3000,
+      "usable_rate": 0.983,
+      "mean_words": 66.8,
+      "formatted_share": 0.2886,
+      "final_train_loss": 1.0218,
+      "train_seconds": 1028.7
+    },
+    "X__deepseek__s1": {
+      "answers": 3000,
+      "usable_rate": 0.9827,
+      "mean_words": 66.6,
+      "formatted_share": 0.267,
+      "final_train_loss": 0.892,
+      "train_seconds": 1024.9
+    },
+    "X__gemma__s0": {
+      "answers": 3000,
+      "usable_rate": 0.974,
+      "mean_words": 86.9,
+      "formatted_share": 0.4956,
+      "final_train_loss": 1.0255,
+      "train_seconds": 1199.0
+    },
+    "X__gemma__s1": {
+      "answers": 3000,
+      "usable_rate": 0.977,
+      "mean_words": 86.3,
+      "formatted_share": 0.4606,
+      "final_train_loss": 0.9292,
+      "train_seconds": 1196.7
+    },
+    "Y__deepseek__s0": {
+      "answers": 3000,
+      "usable_rate": 0.989,
+      "mean_words": 65.7,
+      "formatted_share": 0.2956,
+      "final_train_loss": 1.0752,
+      "train_seconds": 1600.2
+    },
+    "Y__deepseek__s1": {
+      "answers": 3000,
+      "usable_rate": 0.9873,
+      "mean_words": 64.7,
+      "formatted_share": 0.265,
+      "final_train_loss": 0.9537,
+      "train_seconds": 1600.2
+    },
+    "Y__gemma__s0": {
+      "answers": 3000,
+      "usable_rate": 0.9857,
+      "mean_words": 87.3,
+      "formatted_share": 0.4707,
+      "final_train_loss": 1.1174,
+      "train_seconds": 1906.9
+    },
+    "Y__gemma__s1": {
+      "answers": 3000,
+      "usable_rate": 0.9817,
+      "mean_words": 85.8,
+      "formatted_share": 0.4961,
+      "final_train_loss": 0.9679,
+      "train_seconds": 1903.9
+    }
+  }
+}

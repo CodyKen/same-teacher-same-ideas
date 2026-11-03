@@ -1,0 +1,56 @@
+# Backends and models. Every backend speaks the OpenAI chat completions protocol.
+#
+# The prices below are CONSERVATIVE PLACEHOLDERS used only by the budget guard.
+# Replace them with the current official prices before a real run.
+# Run `python3 -m gates_lib.check_models` to confirm each model works, that sampling
+# varies, and that hidden reasoning does not eat max_tokens.
+#
+# Probed on project gpu-running-511901 on 2026-11-02. These four work on the global
+# endpoint with no Model Garden step. Llama 4, Kimi K2, Qwen3 and MiniMax M2 return
+# 404 "does not have access": they need their terms accepted in Model Garden first.
+
+providers:
+  vertex:
+    kind: vertex
+    location: global
+    project_env: GCP_PROJECT
+  vllm:
+    kind: openai_compatible
+    base_url: http://localhost:8000/v1
+  openrouter:
+    kind: openai_compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+
+models:
+  deepseek:
+    provider: vertex
+    model: deepseek-ai/deepseek-v4.1-flash-maas
+    input_per_m: 0.5
+    output_per_m: 1.5
+  gemma:
+    provider: vertex
+    model: google/gemma-4-26b-a4b-it-maas
+    input_per_m: 0.5
+    output_per_m: 1.5
+  glm:
+    provider: vertex
+    model: zai-org/glm-5.2-maas
+    input_per_m: 1.0
+    output_per_m: 3.5
+    # Without this, hidden reasoning uses all of max_tokens and the answer comes back empty.
+    # Under load about 20% of replies still reason inside content, ending in </think>, so
+    # the limit leaves room to reach the answer and llm.py cuts the reasoning off.
+    max_tokens_override: 1000
+    extra_body:
+      chat_template_kwargs:
+        enable_thinking: false
+  gpt_oss:
+    provider: vertex
+    model: openai/gpt-oss-120b-maas
+    input_per_m: 0.5
+    output_per_m: 1.5
+    # Reasoning shares the token limit, so allow room for it on top of the answer.
+    max_tokens_override: 700
+    extra_body:
+      reasoning_effort: low

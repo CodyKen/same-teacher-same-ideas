@@ -1,0 +1,11 @@
+{
+  "base_model": "allenai/Olmo-3-1025-7B",
+  "train_file": "/home/lvxuanyi/gates/runs/t1/train/deepseek_rep3.jsonl",
+  "train_sha256": "98950ca0549215d5d79cbc4ddb7e33cd26a87f7974a0d48262b85ce878311e70",
+  "examples": 4938,
+  "seed": 1,
+  "max_steps": 600,
+  "final_loss": 0.9536867588758469,
+  "seconds": 1600.2,
+  "device": "cuda"
+}

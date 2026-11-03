@@ -1,0 +1,91 @@
+# Thresholds and run parameters for the T1 pilot checks.
+# Decide these BEFORE looking at any result, then lock them:
+#   python -m gates_lib.lock --section t1_gate1
+# Editing a locked section afterwards makes the decision scripts refuse to run.
+
+sampling:
+  temperature: 1.0
+  top_p: 0.9
+  max_tokens: 256
+  samples_per_prompt: 30
+  concurrency: 8
+
+splits:
+  seed: 20261102
+  screen: 100
+  confirm: 100
+  pilot_eval: 100
+
+t1:
+  teachers: [deepseek, gemma, glm, gpt_oss]
+  calibration_teacher: gemma
+  min_usable_per_group: 15
+  max_exact_duplicate_rate: 0.3
+  min_words: 30
+
+t1_gate1:
+  primary_embedder: sentence-transformers/all-mpnet-base-v2
+  robustness_embedders: [BAAI/bge-small-en-v1.5, tfidf]
+  bootstrap: 2000
+  # calibrated_gap = (teacher gap - style control) / (idea control - style control)
+  go_low: 0.25
+  stop_high: 0.10
+  # Reported next to the decision, never used by it. Declared before the confirm split.
+  secondary_report:
+    - drop prompts where any teacher refuses at least 10% of the time
+    - leave one teacher out
+    - drop the 10 prompts with the largest gap
+    - gemma and gpt_oss rewrite each other's answers, splitting distance into voice and ideas
+  human:
+    prompts: 40
+    go_gap_low: 0.10
+    stop_gap_high: 0.03
+    min_kappa: 0.40
+    idea_control_min_different: 0.60
+    style_control_max_different: 0.30
+
+t1_pilot:
+  # Chosen on the screen split: deepseek vs glm was the closest pair (calibrated 0.30),
+  # which leaves little teacher effect to carry over. deepseek vs gemma: 0.81, both fast.
+  teachers: [deepseek, gemma]
+  bases:
+    X: Qwen/Qwen3-4B-Base
+    # Llama-3.1-8B (2024) needs manual license approval. Olmo 3 (2025) is ungated and its
+    # pretraining data is public, so what the base already saw can be checked.
+    Y: allenai/Olmo-3-1025-7B
+  seeds: [0, 1]
+  train_examples: 5000
+  response_max_tokens: 400
+  max_steps: 600
+  batch_size: 4
+  grad_accum: 4
+  learning_rate: 0.0002
+  lora_r: 16
+  lora_alpha: 32
+  max_length: 512
+  samples_per_prompt: 30
+  gen_batch: 30
+
+t1_gate2:
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  # carryover = shared-teacher closeness / net teacher sensitivity within a base
+  go_low: 0.10
+  stop_high: 0.05
+
+t1_style_check:
+  # Is the shared teacher effect in what students say or in how they say it? One model
+  # rewrites every student answer used into the same plain voice, keeping its content, and
+  # the gate-2 quantities are recomputed on the same answers before and after.
+  # content_share = shared effect after rewriting / shared effect before.
+  rewriter: gpt_oss          # not a pilot teacher, so no student is rewritten in its own teacher's voice
+  samples_per_cell: 15       # first usable answers per student and prompt
+  min_pairs: 10              # answers per student and prompt whose rewrite is usable
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  ideas_low: 0.5             # IDEAS: the whole content_share interval at or above this
+  voice_high: 0.25           # VOICE: the whole interval at or below this; otherwise MIXED_OR_UNCLEAR
+  # A rewrite must be closer to its own source than to the other answers of the same
+  # student on the same prompt, or the rewriter changed the content. Chance is about 1/14;
+  # near-identical answers to one prompt keep a faithful rewriter below 1.
+  min_source_match: 0.6

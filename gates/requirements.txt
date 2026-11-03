@@ -1,0 +1,13 @@
+numpy
+scipy
+scikit-learn
+pyyaml
+httpx
+datasets
+huggingface_hub
+sentence-transformers
+torch
+transformers>=4.56
+peft
+accelerate
+pytest

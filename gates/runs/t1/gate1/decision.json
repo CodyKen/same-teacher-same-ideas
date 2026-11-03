@@ -1,0 +1,46 @@
+{
+  "decision": "GO",
+  "review_mode": "llm_judge: one sheet labelled by an LLM, no inter-rater kappa",
+  "embedding": {
+    "state": "GO",
+    "calibrated_gap": {
+      "estimate": 0.6220610304962957,
+      "ci_low": 0.45164315520011167,
+      "ci_high": 0.8176738459373444
+    },
+    "idea_minus_style": {
+      "estimate": 0.2617894185426388,
+      "ci_low": 0.21828498998541468,
+      "ci_high": 0.3048788815811952
+    },
+    "mean_energy": {
+      "gap": 0.3047865392864037,
+      "style": 0.14193754381474374,
+      "idea": 0.40372696235738254,
+      "noise": -0.0014845202575839594
+    },
+    "prompts_used": 97
+  },
+  "attribution": {
+    "accuracy": 0.3116,
+    "chance": 0.25
+  },
+  "robustness_states": {
+    "BAAI/bge-small-en-v1.5": "GO",
+    "tfidf": "INCONCLUSIVE"
+  },
+  "human": {
+    "different_rate": {
+      "cross": 0.5,
+      "within": 0.175,
+      "style": 0.0,
+      "idea": 0.8
+    },
+    "gap": 0.325,
+    "ci_low": 0.199375,
+    "ci_high": 0.47500000000000003,
+    "kappa": null,
+    "state": "GO",
+    "prompts": 40
+  }
+}

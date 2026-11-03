@@ -1,0 +1,25 @@
+{
+  "groups": {
+    "deepseek": {
+      "responses": 2991,
+      "empty_rate": 0.0,
+      "refusal_rate": 0.02,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.021,
+      "truncated_rate": 0.012,
+      "mean_output_tokens": 95.8
+    },
+    "gemma": {
+      "responses": 2994,
+      "empty_rate": 0.0,
+      "refusal_rate": 0.018,
+      "reasoning_rate": 0.0,
+      "exact_duplicate_rate": 0.023,
+      "truncated_rate": 0.028,
+      "mean_output_tokens": 119.4
+    }
+  },
+  "usable_prompts": 98,
+  "total_prompts": 100,
+  "problems": []
+}

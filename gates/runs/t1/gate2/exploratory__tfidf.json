@@ -1,0 +1,41 @@
+{
+  "state": "GO",
+  "prompts_used": 97,
+  "seeds": [
+    0,
+    1
+  ],
+  "carryover": {
+    "estimate": 0.6447877294799153,
+    "ci_low": 0.6141259301095333,
+    "ci_high": 0.6723708249785063
+  },
+  "shared_effect": {
+    "estimate": 0.020932926433266708,
+    "ci_low": 0.018166350111117665,
+    "ci_high": 0.02372064003419994
+  },
+  "net_transfer": {
+    "estimate": 0.0324648337370675,
+    "ci_low": 0.028646438295597036,
+    "ci_high": 0.036627268244629176
+  },
+  "shared_effect_by_seed_pair": {
+    "0-0": 0.02070294990161419,
+    "0-1": 0.0209309775526526,
+    "1-0": 0.020531002909335985,
+    "1-1": 0.02156677536946406
+  },
+  "mean_energy": {
+    "shared_effect": 0.020932926433266708,
+    "transfer": 0.03639827489121819,
+    "noise": 0.003933441154150687,
+    "closer_to_own_teacher": 0.02344129407964618
+  },
+  "closer_to_own_teacher": {
+    "estimate": 0.02344129407964618,
+    "ci_low": 0.019959762272523753,
+    "ci_high": 0.027098892119716382
+  },
+  "note": "exploratory embedder check, not the locked decision"
+}

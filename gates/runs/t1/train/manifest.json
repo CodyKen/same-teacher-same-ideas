@@ -1,0 +1,8 @@
+{
+  "examples_per_cell": 4938,
+  "teachers": [
+    "deepseek",
+    "gemma"
+  ],
+  "draws": 4
+}

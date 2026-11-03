@@ -1,0 +1,29 @@
+{
+  "section": "t1_gate1",
+  "sha256": "0f9a6ce3d1f92e330596cdef0a6e22a93fb63e29b81f33bf6b881082ec248f64",
+  "locked_at": "2026-11-03T03:04:18.592073+00:00",
+  "values": {
+    "primary_embedder": "sentence-transformers/all-mpnet-base-v2",
+    "robustness_embedders": [
+      "BAAI/bge-small-en-v1.5",
+      "tfidf"
+    ],
+    "bootstrap": 2000,
+    "go_low": 0.25,
+    "stop_high": 0.1,
+    "secondary_report": [
+      "drop prompts where any teacher refuses at least 10% of the time",
+      "leave one teacher out",
+      "drop the 10 prompts with the largest gap",
+      "gemma and gpt_oss rewrite each other's answers, splitting distance into voice and ideas"
+    ],
+    "human": {
+      "prompts": 40,
+      "go_gap_low": 0.1,
+      "stop_gap_high": 0.03,
+      "min_kappa": 0.4,
+      "idea_control_min_different": 0.6,
+      "style_control_max_different": 0.3
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "declared": [
+    "drop prompts where any teacher refuses at least 10% of the time",
+    "leave one teacher out",
+    "drop the 10 prompts with the largest gap",
+    "gemma and gpt_oss rewrite each other's answers, splitting distance into voice and ideas"
+  ],
+  "robustness": {
+    "all": {
+      "prompts": 96,
+      "estimate": 0.7470177380807886,
+      "ci_low": 0.5677821739987865,
+      "ci_high": 0.9577708495067755
+    },
+    "without_refusing_prompts": {
+      "prompts": 91,
+      "estimate": 0.6884251903544039,
+      "ci_low": 0.5238564631700515,
+      "ci_high": 0.8788173912535701
+    },
+    "without_top_gaps": {
+      "prompts": 86,
+      "estimate": 0.5244175222164549,
+      "ci_low": 0.39331245028589157,
+      "ci_high": 0.6571184274321993
+    },
+    "without deepseek": {
+      "prompts": 96,
+      "estimate": 0.7856301319568791,
+      "ci_low": 0.5650787678688927,
+      "ci_high": 1.0389079881836298
+    },
+    "without gemma": {
+      "prompts": 96,
+      "estimate": 0.7090136693530171,
+      "ci_low": 0.5017358034336608,
+      "ci_high": 0.943266859186193
+    },
+    "without glm": {
+      "prompts": 96,
+      "estimate": 0.9963204693022369,
+      "ci_low": 0.7735434969154057,
+      "ci_high": 1.2623929919929613
+    },
+    "without gpt_oss": {
+      "prompts": 96,
+      "estimate": 0.49710668171102085,
+      "ci_low": 0.3657949500466672,
+      "ci_high": 0.6516071053359027
+    },
+    "pair deepseek vs gemma": {
+      "prompts": 96,
+      "estimate": 0.8121512041752871,
+      "ci_low": 0.6530206801930658,
+      "ci_high": 1.0214032687260526
+    },
+    "pair deepseek vs glm": {
+      "prompts": 96,
+      "estimate": 0.30397953518794996,
+      "ci_low": 0.15916782334868207,
+      "ci_high": 0.4549503671206225
+    },
+    "pair deepseek vs gpt_oss": {
+      "prompts": 96,
+      "estimate": 1.0090852932508565,
+      "ci_low": 0.7193634068138783,
+      "ci_high": 1.343528482163052
+    },
+    "pair gemma vs glm": {
+      "prompts": 96,
+      "estimate": 0.37518930576982523,
+      "ci_low": 0.22325479799212025,
+      "ci_high": 0.5430288685346353
+    },
+    "pair gemma vs gpt_oss": {
+      "prompts": 96,
+      "estimate": 1.1677249104805676,
+      "ci_low": 0.8664034420177047,
+      "ci_high": 1.5363424693164731
+    },
+    "pair glm vs gpt_oss": {
+      "prompts": 96,
+      "estimate": 0.8139761796202449,
+      "ci_low": 0.5199567277607888,
+      "ci_high": 1.1342972313978965
+    }
+  },
+  "voice_split": {
+    "pair": [
+      "gemma",
+      "gpt_oss"
+    ],
+    "prompts": 96,
+    "mean_energy": {
+      "total": 0.4432352111574356,
+      "voice gemma to gpt_oss": 0.1331869474822559,
+      "ideas in gpt_oss voice": 0.405377219827582,
+      "voice gpt_oss to gemma": 0.13879905806881895,
+      "ideas in gemma voice": 0.42614083079978365,
+      "style": 0.13659903677082877,
+      "idea": 0.3989792447946959
+    },
+    "voice gemma to gpt_oss / total": {
+      "estimate": 0.3004881925658843,
+      "ci_low": 0.23321173110254384,
+      "ci_high": 0.3938109683719116
+    },
+    "ideas in gpt_oss voice / total": {
+      "estimate": 0.9145871303162182,
+      "ci_low": 0.8694460616571325,
+      "ci_high": 0.9569463163245564
+    },
+    "voice gpt_oss to gemma / total": {
+      "estimate": 0.31314989101693463,
+      "ci_low": 0.24082880883265237,
+      "ci_high": 0.37848471335707456
+    },
+    "ideas in gemma voice / total": {
+      "estimate": 0.9614327112843477,
+      "ci_low": 0.9133603303220712,
+      "ci_high": 1.0196958530365607
+    },
+    "calibrated total": {
+      "estimate": 1.1686711307078241,
+      "ci_low": 0.8618810826190287,
+      "ci_high": 1.5471438728698046
+    },
+    "calibrated ideas in gemma voice": {
+      "estimate": 1.1035199499598578,
+      "ci_low": 0.8492986787723151,
+      "ci_high": 1.4059683877171802
+    },
+    "calibrated ideas in gpt_oss voice": {
+      "estimate": 1.0243843660353535,
+      "ci_low": 0.7279189558373884,
+      "ci_high": 1.3737797434034729
+    }
+  }
+}

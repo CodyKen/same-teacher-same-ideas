@@ -1,0 +1,63 @@
+{
+  "state": "IDEAS",
+  "rewriter": "gpt_oss",
+  "prompts_used": 97,
+  "answers_used": 11536,
+  "content_share": {
+    "estimate": 0.7892940694399325,
+    "ci_low": 0.6825902633060202,
+    "ci_high": 0.8825656595779783
+  },
+  "shared_effect_written": {
+    "estimate": 0.05272945892257789,
+    "ci_low": 0.043173356066198695,
+    "ci_high": 0.06389009402968834
+  },
+  "shared_effect_rewritten": {
+    "estimate": 0.04161904921236726,
+    "ci_low": 0.033852418439136334,
+    "ci_high": 0.05047346407682011
+  },
+  "carryover_written": {
+    "estimate": 0.6985901442488323,
+    "ci_low": 0.6419448235509646,
+    "ci_high": 0.7521512345972275
+  },
+  "carryover_rewritten": {
+    "estimate": 0.6869480238315823,
+    "ci_low": 0.6211335835354775,
+    "ci_high": 0.7471045038595714
+  },
+  "teacher_effect_share": {
+    "estimate": 0.802670709712929,
+    "ci_low": 0.7214550967587091,
+    "ci_high": 0.8741372520835423
+  },
+  "source_match": 0.9108876560332871,
+  "style": {
+    "deepseek written": {
+      "mean_words": 66.10256855258591,
+      "formatted_share": 0.2794168691426588
+    },
+    "deepseek rewritten": {
+      "mean_words": 82.69333564734467,
+      "formatted_share": 0.09961818812912183
+    },
+    "gemma written": {
+      "mean_words": 87.0,
+      "formatted_share": 0.48216141323172845
+    },
+    "gemma rewritten": {
+      "mean_words": 96.05126428818843,
+      "formatted_share": 0.11621059923796329
+    }
+  },
+  "mean_energy": {
+    "shared_effect written": 0.05272945892257789,
+    "transfer written": 0.08474335684560802,
+    "noise written": 0.009263536014073242,
+    "shared_effect rewritten": 0.04161904921236726,
+    "transfer rewritten": 0.0685967647316887,
+    "noise rewritten": 0.008011323375835957
+  }
+}
