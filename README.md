@@ -5,46 +5,60 @@ When base models from different families are fine-tuned on synthetic data from t
 ## Layout
 
 ```
-Proposal/           LaTeX source and PDF of the project proposal
-gates/
-  config/           run parameters (gates.yaml) and model backends (models.yaml)
-  gates_lib/        model client, statistics, embeddings, text cleaning, config locks, mock backend
-  t1/               the experiment pipeline, one module per step
-  tests/            offline tests on a mock backend (no network, no cost)
-  runs/             outputs; only result summaries and prompt splits are tracked
+Proposal/             LaTeX source and PDF of the project proposal
+configs/
+  experiment.yaml     run parameters and analysis thresholds, one section per study part
+  models.yaml         hosted model backends
+sameteacher/
+  core/               config and I/O, model client, mock backend, text cleaning, run paths,
+                      config locks, and the experimental grid
+  data/               prompt splits, teacher sampling, quality checks, training data
+  train/              LoRA training, student sampling, drivers for the pilot and the main grid
+  eval/               embeddings, energy distance and bootstrap, blinded human-evaluation sheets
+  style_norm/         neutral-style rewriting of student answers and normalized retention
+  analysis/           teacher distance and the shared-teacher effect
+tests/                offline tests on a mock backend (no network, no cost)
+runs/                 outputs; only result summaries, prompt splits and locks are tracked
 ```
+
+`sameteacher/core/paths.py` documents the layout of `runs/`.
 
 ## Setup
 
 ```bash
-cd gates
 python3 -m pip install -r requirements.txt
 python3 -m pytest -q
 ```
 
-Hosted teachers and rewriters are called through Vertex AI. Authenticate with `gcloud auth login` and set the default project; `python3 -m gates_lib.check_models` confirms that each configured model responds and that sampling varies. Prices in `config/models.yaml` are placeholders used only by the budget guard.
+Hosted teachers and rewriters are called through Vertex AI. Authenticate with `gcloud auth login` and set the default project; `python3 -m sameteacher.core.check_models` confirms that each configured model responds and that sampling varies. Prices in `configs/models.yaml` are placeholders used only by the budget guard.
 
 ## Pipeline
 
-All commands run from `gates/`. Each step resumes where it stopped and halts at `--max-usd`.
+All commands run from the repository root. Steps that call hosted models resume where they stopped and halt at `--max-usd`.
 
 | Step | Module | Where |
 |---|---|---|
-| Draw prompt splits from Infinity-Chat | `t1.step1_make_prompt_splits` | local |
-| Sample teachers and calibration controls | `t1.step2_sample_teachers` | local, hosted models |
-| Quality check of teacher answers | `t1.step3_quality_check` | local |
-| Teacher distance on a split | `t1.step4_measure_teacher_gap`, `t1.step4b_secondary` | local |
-| Training data from Dolly prompts | `t1.step7_make_training_data` | local, hosted models |
-| Train and sample every student | `t1.run_2x2` (uses `t1.train_lora`, `t1.generate_students`) | GPU machine |
-| Shared-teacher effect and carryover | `t1.analyze_2x2` | local or GPU |
-| Style normalization and retention | `t1.step8_style_check` | local, hosted models |
+| Draw the pilot prompt splits from Infinity-Chat | `sameteacher.data.make_splits` | local |
+| Draw the main test split from the untouched pool | `sameteacher.data.make_test_split` | local |
+| Sample teachers (and calibration controls) on a split | `sameteacher.data.sample_teachers` | local, hosted models |
+| Quality check of teacher answers | `sameteacher.data.quality_check` | local |
+| Teacher distance and its secondary checks | `sameteacher.analysis.teacher_distance`, `sameteacher.analysis.teacher_distance_checks` | local |
+| Blinded teacher-pair annotation sheets | `sameteacher.eval.blind_review` | local |
+| Pilot training data from Dolly prompts | `sameteacher.data.pilot_training_data` | local, hosted models |
+| Teacher draws for the main grid | `sameteacher.data.training_draws` | local, hosted models |
+| Train and sample the pilot students | `sameteacher.train.run_pilot` | GPU machine |
+| Train and sample the main-grid students | `sameteacher.train.run_main` | GPU machine |
+| Pilot shared-teacher effect and carryover | `sameteacher.analysis.pilot_shared_teacher` | local or GPU |
+| Pilot style normalization and retention | `sameteacher.style_norm.pilot_retention` | local, hosted models |
 
-Thresholds in `config/gates.yaml` are frozen with `python3 -m gates_lib.lock --section <name>` before results are seen. Analysis scripts refuse to run if a locked section changes.
+Analysis parameters in `configs/experiment.yaml` are frozen with `python3 -m sameteacher.core.lock --section <name>` before results are seen. Analysis scripts refuse to run if a locked section changes.
 
 ## Results tracked in git
 
-- `gates/runs/t1/gate1/`: teacher distances on the screen and confirm splits, robustness and quality summaries
-- `gates/runs/t1/gate2/`: pilot shared-teacher effect, embedder robustness, style normalization, per-cell distance matrix
-- `gates/runs/t1/models_meta/`: training metadata for each pilot student
-- `gates/runs/t1/prompts/`: the prompt splits
-- `gates/runs/locks/`: frozen threshold sections
+- `runs/results/pilot/teacher_distance/`: teacher distances on the screen and confirm splits, robustness and quality summaries
+- `runs/results/pilot/shared_teacher/`: pilot shared-teacher effect, embedder robustness, per-cell distance matrix
+- `runs/results/pilot/style_norm/`: pilot style normalization
+- `runs/results/pilot/qualitative/`: labels for the qualitative example
+- `runs/models_meta/`: training metadata for each pilot student
+- `runs/prompts/`: the prompt splits
+- `runs/locks/`: frozen config sections

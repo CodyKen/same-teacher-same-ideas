@@ -1,0 +1,52 @@
+{
+  "section": "main_grid",
+  "sha256": "aaa6d07aacfa3fc6eb3e76566a8dc4cb27125700a3a52aa6a309ae12679c19c6",
+  "locked_at": "2026-11-04T05:22:46.967004+00:00",
+  "values": {
+    "teachers": [
+      "deepseek",
+      "gemma",
+      "glm"
+    ],
+    "bases": {
+      "X": "Qwen/Qwen3-4B-Base",
+      "Y": "allenai/Olmo-3-1025-7B",
+      "Z": "HuggingFaceTB/SmolLM3-3B-Base"
+    },
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "draws": {
+      "X": [
+        0,
+        1,
+        4
+      ],
+      "Y": [
+        2,
+        3,
+        5
+      ],
+      "Z": [
+        6,
+        7,
+        8
+      ]
+    },
+    "draw_retries": 4,
+    "test_split": "main_test",
+    "test_prompts": 200,
+    "response_max_tokens": 400,
+    "max_steps": 600,
+    "batch_size": 4,
+    "grad_accum": 4,
+    "learning_rate": 0.0002,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "max_length": 512,
+    "samples_per_prompt": 30,
+    "gen_batch": 30
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "section": "pilot_teachers",
+  "sha256": "fcf1b3894b0529472eebd9d332379dcfdaaa043c0f97c2b33047327c998cab14",
+  "locked_at": "2026-11-03T03:04:18.664846+00:00",
+  "renamed_from": "t1",
+  "renamed_on": "2026-11-04",
+  "values": {
+    "teachers": [
+      "deepseek",
+      "gemma",
+      "glm",
+      "gpt_oss"
+    ],
+    "calibration_teacher": "gemma",
+    "min_usable_per_group": 15,
+    "max_exact_duplicate_rate": 0.3,
+    "min_words": 30
+  }
+}

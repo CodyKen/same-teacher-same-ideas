@@ -24,11 +24,10 @@ Proposal/build/
 
 # Run outputs: keep the small result summaries and prompt splits, ignore raw
 # generations, training data, logs and the blind-review key.
-gates/runs/**
-!gates/runs/**/
-!gates/runs/locks/*.json
-!gates/runs/t1/gate1/*.json
-!gates/runs/t1/gate2/*.json
-!gates/runs/t1/models_meta/**
-!gates/runs/t1/prompts/**
-!gates/runs/t1/train/manifest.json
+runs/**
+!runs/**/
+!runs/locks/*.json
+!runs/results/**
+!runs/models_meta/**
+!runs/prompts/**
+!runs/train_data/manifest*.json

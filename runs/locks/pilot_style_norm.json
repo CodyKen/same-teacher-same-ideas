@@ -1,0 +1,17 @@
+{
+  "section": "pilot_style_norm",
+  "sha256": "7b317d13367c27cf0f191928d797c1318cdc697eac1623385ab29c93c0a82afc",
+  "locked_at": "2026-11-03T17:16:05.931646+00:00",
+  "renamed_from": "t1_style_check",
+  "renamed_on": "2026-11-04",
+  "values": {
+    "rewriter": "gpt_oss",
+    "samples_per_cell": 15,
+    "min_pairs": 10,
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "bootstrap": 2000,
+    "ideas_low": 0.5,
+    "voice_high": 0.25,
+    "min_source_match": 0.6
+  }
+}

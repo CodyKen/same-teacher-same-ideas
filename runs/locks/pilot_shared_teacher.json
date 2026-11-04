@@ -1,0 +1,13 @@
+{
+  "section": "pilot_shared_teacher",
+  "sha256": "4f65a2ac0ebd5b7d55abf64148caed62bb35858d5bb3bb6093f9db0cedfb46c4",
+  "locked_at": "2026-11-03T08:48:03.018808+00:00",
+  "renamed_from": "t1_gate2",
+  "renamed_on": "2026-11-04",
+  "values": {
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "bootstrap": 2000,
+    "go_low": 0.1,
+    "stop_high": 0.05
+  }
+}
