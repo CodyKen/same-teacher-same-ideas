@@ -80,7 +80,7 @@ async def rewrite(args, cfg, sources) -> dict:
         stats = await run_jobs(sources, handler, neutral_path(args.run_dir), args.concurrency or sampling["concurrency"])
     finally:
         await chat.aclose()
-    print(f"rewrites: {stats}, spent about ${chat.budget.spent:.2f}, {chat.throttled} throttled retries")
+    print(f"rewrites: {stats}, spent about ${chat.budget.spent:.2f}, {chat.throttled} throttled and {chat.malformed} malformed-response retries")
     return stats
 
 

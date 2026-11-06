@@ -1,0 +1,11 @@
+{
+  "base_model": "Qwen/Qwen3-4B-Base",
+  "train_file": "/home/lvxuanyi/sameteacher/runs/train_data/glm_rep4.jsonl",
+  "train_sha256": "0fbf57d3f09fa0c0fbefc9878bf027fa6fe2e00c452e233b500fb0d98ab9ef6a",
+  "examples": 4936,
+  "seed": 2,
+  "max_steps": 600,
+  "final_loss": 1.252290278673172,
+  "seconds": 1217.0,
+  "device": "cuda"
+}

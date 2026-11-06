@@ -1,0 +1,11 @@
+{
+  "base_model": "HuggingFaceTB/SmolLM3-3B-Base",
+  "train_file": "/home/lvxuanyi/sameteacher/runs/train_data/glm_rep7.jsonl",
+  "train_sha256": "e38c58b13c6fe81e9fc9cb404077e8dd260b8ceb9f4e9daf5943bc1f92f03587",
+  "examples": 4937,
+  "seed": 1,
+  "max_steps": 600,
+  "final_loss": 1.0943112075328827,
+  "seconds": 868.1,
+  "device": "cuda"
+}

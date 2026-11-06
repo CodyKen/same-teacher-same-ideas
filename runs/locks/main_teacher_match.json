@@ -1,0 +1,14 @@
+{
+  "section": "main_teacher_match",
+  "sha256": "cf27988b6d6c8928cda4e52a9cdfba5f6ddd73aa3943db6bce632dbc8f135580",
+  "locked_at": "2026-11-06T01:20:12.474430+00:00",
+  "values": {
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "bootstrap": 2000,
+    "bootstrap_seed": 0,
+    "ci_level": 0.95,
+    "train_prompts": 300,
+    "train_seed": 0,
+    "min_words": 30
+  }
+}

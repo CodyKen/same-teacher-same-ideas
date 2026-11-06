@@ -1,0 +1,11 @@
+{
+  "base_model": "allenai/Olmo-3-1025-7B",
+  "train_file": "/home/lvxuanyi/sameteacher/runs/train_data/gemma_rep5.jsonl",
+  "train_sha256": "bde2ed07a576385209a38f9e50353c578abc3770afff99e3224916787d94639c",
+  "examples": 4938,
+  "seed": 2,
+  "max_steps": 600,
+  "final_loss": 0.9447915554046631,
+  "seconds": 1942.4,
+  "device": "cuda"
+}

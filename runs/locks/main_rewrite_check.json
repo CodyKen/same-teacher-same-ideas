@@ -1,0 +1,15 @@
+{
+  "section": "main_rewrite_check",
+  "sha256": "489c8dc0c8f4b95138f98c95013ec6cee42e6edb91dcd584a92ef093ace94a72",
+  "locked_at": "2026-11-06T01:20:12.420345+00:00",
+  "values": {
+    "rewriter": "gpt_oss",
+    "per_cell": 15,
+    "shared_per_cell": 3,
+    "decoys": 15,
+    "shared_decoys": 3,
+    "annotators": 3,
+    "seed": 20261105,
+    "ci_level": 0.95
+  }
+}
