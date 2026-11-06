@@ -37,6 +37,9 @@ box for anything unclear.</p>
 <p>Labels are saved in this browser as you go. When you finish, click <b>Export CSV</b> and put
 the downloaded file in <code>runs/human_eval/rewrite_fidelity/</code>, replacing the blank sheet
 of the same name. Export also works as a backup at any time; <b>Import CSV</b> loads it back.</p>
+<p>The repository is public and some items are on every sheet, so keep your filled sheet to
+yourself until all three sheets are done. Then commit it, or send it to the person who runs the
+scoring.</p>
 """
 
 TEMPLATE = r"""<!doctype html>

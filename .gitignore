@@ -22,8 +22,8 @@ Proposal/build/
 *.out
 *.synctex.gz
 
-# Run outputs: keep the small result summaries and prompt splits, ignore raw
-# generations, training data, logs and the blind-review key.
+# Run outputs: keep the small result summaries, prompt splits and annotation sheets;
+# ignore raw generations, training data, logs, caches and the blind-review keys.
 runs/**
 !runs/**/
 !runs/locks/*.json
@@ -31,3 +31,9 @@ runs/**
 !runs/models_meta/**
 !runs/prompts/**
 !runs/train_data/manifest*.json
+# Annotation sheets are shared with the team through the repository. The keys and the
+# LLM judge's labels stay local so that annotators stay blind.
+!runs/human_eval/**
+runs/human_eval/**/key_DO_NOT_OPEN.json
+runs/human_eval/**/llm_judge_*
+runs/human_eval/**/.DS_Store
