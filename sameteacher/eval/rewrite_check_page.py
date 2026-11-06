@@ -47,7 +47,7 @@ TEMPLATE = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rewrite Check __SHEET_TITLE__</title>
+<title>__PAGE_TITLE__ __SHEET_TITLE__</title>
 <style>
 :root {
   --bg: #f6f6f3; --card: #ffffff; --fg: #1d1d1b; --muted: #6b6b66; --border: #dcdcd6;
@@ -123,7 +123,7 @@ textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-
 <body>
 <header>
   <div class="bar">
-    <h1>Rewrite check, __SHEET_TITLE__</h1>
+    <h1>__PAGE_HEADING__, __SHEET_TITLE__</h1>
     <div class="progress"><div class="track"><div class="fill" id="fill"></div></div><div class="text" id="progress-text"></div></div>
     <button id="next">Next unfinished</button>
     <button id="filter" aria-pressed="false">Show unfinished only</button>
@@ -147,7 +147,8 @@ textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-
   "use strict";
   var DATA = JSON.parse(document.getElementById("data").textContent);
   var LABELS = DATA.labels;
-  var STORE = "rewrite-check:" + DATA.sheet;
+  var BOXES = DATA.boxes || [["original", "Original"], ["rewrite", "Rewrite"]];
+  var STORE = (DATA.store || "rewrite-check") + ":" + DATA.sheet;
   var state = {}, storage = true;
   try {
     localStorage.setItem(STORE + ":probe", "1"); localStorage.removeItem(STORE + ":probe");
@@ -191,8 +192,7 @@ textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-
       var prompt = el("div", "prompt"); prompt.appendChild(el("span", "tag", "Prompt")); prompt.appendChild(document.createTextNode(item.prompt || "(no prompt text)"));
       card.appendChild(prompt);
       var pair = el("div", "pair");
-      pair.appendChild(textBox("Original", item.original));
-      pair.appendChild(textBox("Rewrite", item.rewrite));
+      BOXES.forEach(function (b) { pair.appendChild(textBox(b[1], item[b[0]])); });
       card.appendChild(pair);
       var labels = el("div", "labels");
       LABELS.forEach(function (l) {
@@ -237,11 +237,11 @@ textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-
 
   function csvCell(v) { v = v == null ? "" : String(v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
   function exportCsv() {
-    var header = ["item_id", "prompt", "original", "rewrite"].concat(LABELS.map(function (l) { return l[0]; }), ["notes"]);
+    var header = ["item_id", "prompt"].concat(BOXES.map(function (b) { return b[0]; }), LABELS.map(function (l) { return l[0]; }), ["notes"]);
     var lines = [header.join(",")];
     DATA.items.forEach(function (item) {
       var s = state[item.item_id] || {};
-      var row = [item.item_id, item.prompt, item.original, item.rewrite].concat(LABELS.map(function (l) { return s[l[0]] || ""; }), [s.notes || ""]);
+      var row = [item.item_id, item.prompt].concat(BOXES.map(function (b) { return item[b[0]]; }), LABELS.map(function (l) { return s[l[0]] || ""; }), [s.notes || ""]);
       lines.push(row.map(csvCell).join(","));
     });
     var blob = new Blob([lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" });
@@ -304,14 +304,28 @@ textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-
 """
 
 
-def render(sheet: str, items: list[dict]) -> str:
-    """HTML for one sheet. `sheet` is the file stem suffix (a1, a2, ...); items come from its CSV."""
+def render(sheet: str, items: list[dict], labels=None, rubric: str = RUBRIC_HTML, title: str = "Rewrite Check",
+           boxes=None, store: str | None = None) -> str:
+    """HTML for one sheet. `sheet` is the file stem suffix (a1, a2, ...); items come from its CSV.
+
+    `labels` (default LABEL_QUESTIONS), `rubric` and `title` let other hand checks reuse the page.
+    `boxes` lists the (CSV column, heading) of each text shown side by side (default: original and
+    rewrite), and `store` names the browser-storage key, so pages of different checks never share
+    saved labels.
+    """
+    fields = [b[0] for b in boxes] if boxes else ["original", "rewrite"]
     payload = {
         "sheet": sheet,
-        "labels": LABEL_QUESTIONS,
-        "items": [{k: item[k] for k in ("item_id", "prompt", "original", "rewrite")} for item in items],
+        "labels": labels or LABEL_QUESTIONS,
+        "items": [{k: item[k] for k in ("item_id", "prompt", *fields)} for item in items],
     }
+    if boxes:
+        payload["boxes"] = [list(b) for b in boxes]
+    if store:
+        payload["store"] = store
     # Escape "<" so no answer text can close the script element.
     data = json.dumps(payload, ensure_ascii=False).replace("<", "\\u003c")
-    title = f"Annotator {sheet[1:]}" if sheet.startswith("a") else sheet
-    return TEMPLATE.replace("__SHEET_TITLE__", title).replace("__RUBRIC__", RUBRIC_HTML).replace("__DATA__", data)
+    name = f"Annotator {sheet[1:]}" if sheet.startswith("a") else sheet
+    heading = title[0] + title[1:].lower()
+    return (TEMPLATE.replace("__PAGE_TITLE__", title).replace("__PAGE_HEADING__", heading)
+            .replace("__SHEET_TITLE__", name).replace("__RUBRIC__", rubric).replace("__DATA__", data))

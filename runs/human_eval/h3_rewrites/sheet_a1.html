@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>H3 Rewrite Check Annotator 1</title>
+<style>
+:root {
+  --bg: #f6f6f3; --card: #ffffff; --fg: #1d1d1b; --muted: #6b6b66; --border: #dcdcd6;
+  --accent: #2f5d8a; --accent-soft: #e6eef6; --yes: #2e7d4f; --no: #b3412f; --done: #eaf4ee;
+  --prompt-bg: #f1efe7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615; --card: #1f1f1d; --fg: #ecece8; --muted: #a2a29b; --border: #3a3a36;
+    --accent: #8db7e0; --accent-soft: #24313d; --yes: #6fcf97; --no: #f08b78; --done: #1e2a22;
+    --prompt-bg: #262520;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161615; --card: #1f1f1d; --fg: #ecece8; --muted: #a2a29b; --border: #3a3a36;
+  --accent: #8db7e0; --accent-soft: #24313d; --yes: #6fcf97; --no: #f08b78; --done: #1e2a22;
+  --prompt-bg: #262520;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+header { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border); }
+.bar { max-width: 1180px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.bar h1 { font-size: 17px; margin: 0 12px 0 0; }
+.progress { flex: 1 1 160px; min-width: 140px; }
+.progress .track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress .fill { height: 100%; width: 0; background: var(--yes); transition: width .2s; }
+.progress .text { font-size: 13px; color: var(--muted); margin-top: 2px; }
+button, label.button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--card); color: var(--fg); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--card); }
+button:hover, label.button:hover { border-color: var(--accent); }
+main { max-width: 1180px; margin: 0 auto; padding: 16px; }
+details.rubric { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; }
+details.rubric summary { cursor: pointer; font-weight: 600; }
+details.rubric dt { font-weight: 600; margin-top: 8px; }
+details.rubric dd { margin: 2px 0 0 0; }
+code { font-size: 0.9em; background: var(--accent-soft); padding: 1px 4px; border-radius: 4px; }
+.item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; scroll-margin-top: 120px; }
+.item.complete { background: var(--done); }
+.item .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.item .id { font-weight: 700; }
+.item .status { font-size: 13px; color: var(--muted); }
+.prompt { background: var(--prompt-bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.prompt .tag, .text .tag { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+.text { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+.text .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.text .count { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.labels { margin-top: 12px; display: grid; gap: 8px; }
+.q { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.q .name { font-weight: 700; width: 56px; }
+.q .question { flex: 1 1 280px; color: var(--muted); font-size: 14px; }
+.choices { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.choices input { position: absolute; opacity: 0; pointer-events: none; }
+.choices label { padding: 4px 16px; cursor: pointer; font-weight: 600; user-select: none; }
+.choices label + input + label { border-left: 1px solid var(--border); }
+.choices input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: -2px; }
+.choices input.y:checked + label { background: var(--yes); color: var(--card); }
+.choices input.n:checked + label { background: var(--no); color: var(--card); }
+textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-size: 14px; padding: 6px 8px;
+  border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); }
+.hidden { display: none; }
+.warning { background: #fff4d6; color: #5a4300; border: 1px solid #e6c766; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .warning { background: #3a3014; color: #f3dc9a; border-color: #7a6424; } }
+:root[data-theme="dark"] .warning { background: #3a3014; color: #f3dc9a; border-color: #7a6424; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--fg); color: var(--bg);
+  padding: 8px 14px; border-radius: 6px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>H3 rewrite check, Annotator 1</h1>
+    <div class="progress"><div class="track"><div class="fill" id="fill"></div></div><div class="text" id="progress-text"></div></div>
+    <button id="next">Next unfinished</button>
+    <button id="filter" aria-pressed="false">Show unfinished only</button>
+    <label class="button" for="import">Import CSV</label>
+    <input type="file" id="import" accept=".csv,text/csv" class="hidden">
+    <button class="primary" id="export">Export CSV</button>
+  </div>
+</header>
+<main>
+  <div class="warning hidden" id="storage-warning">This browser does not save progress for this page. Labels will be lost if you close or reload it, so click <b>Export CSV</b> often, or open the page in Chrome or Safari.</div>
+  <details class="rubric" id="rubric" open>
+    <summary>Instructions</summary>
+    
+<p>Each item shows a request, an <b>original</b> answer and a <b>rewrite</b>. The rewrite was
+written by another model, asked to restate the original in its own words and its own style,
+keeping every idea, claim, example and recommendation and adding none. A change of voice, length
+or formatting is expected and is not judged: judge only the content. Answer two questions with Y
+or N, and use the notes box for anything unclear.</p>
+<dl>
+  <dt>Kept</dt>
+  <dd><b>Y</b> if every idea, claim, example and recommendation of the original appears in the
+  rewrite. Rewording, merging or splitting sentences, a new tone and new formatting are fine.
+  <b>N</b> if anything of substance is missing or its meaning changed.</dd>
+  <dt>Added</dt>
+  <dd><b>Y</b> if the rewrite states an idea, claim or example that is not in the original.
+  Connecting words, a short restatement of the request and a change of tone do not count.
+  Otherwise <b>N</b>.</dd>
+</dl>
+<p>Work alone, and do not discuss items until every sheet is in. Do not open
+<code>key_DO_NOT_OPEN.json</code>.</p>
+<p>Labels are saved in this browser as you go. When you finish, click <b>Export CSV</b> and put
+the downloaded file in <code>runs/human_eval/h3_rewrites/</code>, replacing the blank sheet of
+the same name. Export also works as a backup at any time; <b>Import CSV</b> loads it back.</p>
+<p>The repository is public and some items are on every sheet, so keep your filled sheet to
+yourself until all three sheets are done. Then commit it, or send it to the person who runs the
+scoring.</p>
+
+  </details>
+  <div id="items"></div>
+</main>
+<div class="toast" id="toast"></div>
+<script type="application/json" id="data">{"sheet": "a1", "labels": [["kept", "Kept", "Is every idea, claim, example and recommendation of the original in the rewrite?"], ["added", "Added", "Does the rewrite state an idea, claim or example that is not in the original?"]], "items": [{"item_id": "H044", "prompt": "What are the best hiking trails near Seattle, Washington?", "original": "The best hiking trails near Seattle include Mount Si (8 miles round trip, challenging), Rattlesnake Ledge (4 miles, moderate), and Snow Lake (7 miles, moderate). For easier options, try Discovery Park (2.8 miles) or Twin Falls (2.6 miles).", "rewrite": "If you're looking for great hikes around Seattle, some top choices include the challenging 8-mile Mount Si loop, the moderate 4-mile Rattlesnake Ledge, and the 7-mile trek to Snow Lake. For those seeking something less intense, Discovery Park offers a 2.8-mile walk, while Twin Falls provides a shorter 2.6-mile option."}, {"item_id": "H067", "prompt": "Explain in few words how traditional exploratory data analysis (in statistics) is different from machine learning?", "original": "Traditional exploratory data analysis focuses on understanding data structure, patterns, and assumptions through visualization and summary statistics, often with human interpretation. Machine learning focuses on building predictive models that generalize to new data, optimizing performance metrics automatically, with less emphasis on explaining the data itself.", "rewrite": "Traditional exploratory data analysis is about understanding the data’s structure, patterns, and assumptions using visualization and summary statistics, usually with human interpretation. Machine learning is about creating predictive models that generalize to new data, optimizing performance metrics automatically, and placing less emphasis on explaining the data itself."}, {"item_id": "H055", "prompt": "Give me a list of best places to take vacation.", "original": "The best vacation spots include Paris, France for culture; Maui, Hawaii for beaches; Kyoto, Japan for history; Rome, Italy for ruins; Bali, Indonesia for affordability; Banff, Canada for mountains; Cape Town, South Africa for diversity; Sydney, Australia for harbor views; Reykjavik, Iceland for northern lights; and Costa Rica for rainforests and wildlife.", "rewrite": "For a great vacation, consider Paris for culture, Maui for beaches, Kyoto for history, Rome for ruins, Bali for affordability, Banff for mountains, Cape Town for diversity, Sydney for harbor views, Reykjavik for northern lights, and Costa Rica for rainforests and wildlife."}, {"item_id": "H104", "prompt": "List five titles by Robert Jordan.", "original": "1. The Eye of the World\n2. The Great Hunt\n3. The Dragon Reborn\n4. The Shadow Rising\n5. The Fires of Heaven", "rewrite": "Here are five titles by Robert Jordan:\n\n*   The Eye of the World\n*   The Great Hunt\n*   The Dragon Reborn\n*   The Shadow Rising\n*   The Fires of Heaven"}, {"item_id": "H024", "prompt": "How long will it take me to train for a marathon?", "original": "Most people need 16 to 20 weeks of consistent training to run a marathon safely. If you already run regularly, 16 weeks may suffice; if you're newer, plan on 20 or more. Beginners often take 6 to 12 months to build the required base.", "rewrite": "Most people need 16 to 20 weeks of steady training to safely run a marathon. If you already run regularly, 16 weeks might be enough; if you're newer, plan for 20 weeks or more. Beginners often need 6 to 12 months to build the necessary base."}, {"item_id": "H004", "prompt": "What kind of bacteria is Bifidobacterium thermacidophilum", "original": "*Bifidobacterium thermacidophilum* is a thermophilic, Gram-positive, non-spore-forming bacterium belonging to the genus *Bifidobacterium*. It is characterized by its ability to thrive at higher temperatures than many other bifidobacteria. It is typically classified as a probiotic organism, known for its role in the gastrointestinal tract where it aids in fermentation, supports mucosal immunity, and helps maintain a healthy gut microbiome through the production of lactic and acetic acids.", "rewrite": "*Bifidobacterium thermacidophilum* is a Gram-positive, non-spore-forming, thermophilic bacterium within the *Bifidobacterium* genus. Unlike many other members of its genus, it is distinguished by its capacity to flourish at elevated temperatures. Often classified as a probiotic, it plays a vital role in the gastrointestinal tract by facilitating fermentation and supporting mucosal immunity. It helps maintain a healthy gut microbiome through the production of acetic and lactic acids."}, {"item_id": "H020", "prompt": "Which U.S. wine company produces the most wine in the United States?", "original": "E. & J. Gallo Winery is the largest wine producer in the United States.", "rewrite": "E. & J. Gallo Winery makes the most wine of any company in the U.S."}, {"item_id": "H051", "prompt": "What is the KPMG company?", "original": "KPMG is a multinational professional services network, one of the \"Big Four\" accounting firms alongside Deloitte, EY, and PwC. Headquartered in Amstelveen, Netherlands, it provides audit, tax, and advisory services to businesses and governments worldwide.", "rewrite": "KPMG is a global professional services network and one of the \"Big Four\" accounting firms, together with Deloitte, EY, and PwC. Its headquarters are in Amstelveen, Netherlands, and it offers audit, tax, and advisory services to companies and governments around the world."}, {"item_id": "H111", "prompt": "What cities should someone visit during a trip to Morocco?", "original": "Visit Marrakech for its medina and Jemaa el-Fnaa, Fes for its ancient tanneries and souks, Chefchaouen for its blue streets, Casablanca for the Hassan II Mosque, Rabat for its kasbah, Essaouira for its coastal ramparts, and Tangier for its gateway-to-Africa vibe.", "rewrite": "For a quintessential Moroccan experience, explore Marrakech to see the medina and Jemaa el-Fnaa, or head to Fes to discover its historic souks and ancient tanneries. Wander through the blue-washed streets of Chefchaouen, visit the Hassan II Mosque in Casablanca, or explore the kasbah in Rabat. For coastal charm, visit the ramparts of Essaouira, and experience the unique \"gateway-to-Africa\" atmosphere of Tangier."}, {"item_id": "H009", "prompt": "Give me a bullet list of five different European languages", "original": "* French\n* German\n* Italian\n* Spanish\n* Polish", "rewrite": "- French\n- German\n- Italian\n- Spanish\n- Polish"}, {"item_id": "H057", "prompt": "how do you decide which job to take?", "original": "To decide which job to take, evaluate each offer against your core priorities: compensation, career growth, work-life balance, and company culture. Assess the role's alignment with your long-term professional goals and whether the daily responsibilities energize or drain you. Consider practical factors like commute, benefits, and stability. Finally, trust your intuition; if a role offers everything on paper but feels wrong in practice, it may not be the right fit. The ideal choice balances financial needs with personal fulfillment and professional trajectory.", "rewrite": "When choosing a job, compare each offer with what matters most to you: pay, chances to grow, work-life balance, and company culture. Add up the full package—benefits, equity, and commute. Think about how the role will affect your resume long term and whether the duties match your career goals. Also listen to your gut about the team and managers; a big salary won’t make up for a toxic workplace. Pick the job that best combines financial security, learning new skills, and personal well-being."}, {"item_id": "H037", "prompt": "What was Meghan Markle's royal title?", "original": "Meghan Markle's royal title was Her Royal Highness The Duchess of Sussex.", "rewrite": "Meghan Markle held the title of Her Royal Highness The Duchess of Sussex."}, {"item_id": "H063", "prompt": "Give me exactly 5 characteristics of award winning songs.", "original": "1. Memorable, emotionally resonant melodies.  \n2. Universally relatable, well-crafted lyrics.  \n3. Strong, distinctive vocal performance.  \n4. Innovative production or arrangement.  \n5. Cultural impact or timely relevance.", "rewrite": "1. Melodies that are catchy and evoke deep emotion.\n2. Lyrics that are skillfully written and resonate with a wide audience.\n3. A unique and compelling vocal delivery.\n4. Creative and groundbreaking production or musical arrangement.\n5. Significant cultural influence or connection to current events."}, {"item_id": "H007", "prompt": "Give me some movie/tv series to learn English", "original": "For beginners, watch **Friends** or **The Office**; they use everyday conversational English and clear pronunciation. For intermediate learners, **The Good Place** offers engaging dialogue and clear articulation, while **Stranger Things** provides great context for casual teen slang. If you are advanced, watch **Sherlock** or **The Crown** to master sophisticated vocabulary, formal structures, and various British accents. Always use English subtitles rather than your native language to reinforce the connection between sounds and spelling.", "rewrite": "To learn English, start with **Friends** or **The Office** if you are a beginner, as they feature clear pronunciation and everyday dialogue. Intermediate learners should try **The Good Place** for its articulate speech or **Stranger Things** to pick up casual teen slang. For advanced students, **Sherlock** and **The Crown** are excellent for mastering formal structures, sophisticated vocabulary, and different British accents. To best reinforce the link between spelling and sound, always use English subtitles instead of subtitles in your native language."}, {"item_id": "H066", "prompt": "What are some qualities that make a good computer programmer?", "original": "A good programmer combines logical problem-solving with persistence and attention to detail. They write clean, maintainable code, communicate clearly with teammates, and continuously learn new tools. Patience for debugging, curiosity about how systems work, and the ability to break complex problems into small steps are essential. Collaboration and humility matter too, since software is rarely built alone.", "rewrite": "Exceptional programmers possess strong logical reasoning, meticulous attention to detail, and the persistence required to tackle challenges. They prioritize writing clean, maintainable code and maintain clear communication with their peers. Continuous learning and a deep curiosity regarding system mechanics are vital, as is the patience needed for debugging. They must be able to decompose complex problems into manageable components. Finally, because software development is a collaborative endeavor, humility and teamwork are indispensable qualities."}, {"item_id": "H081", "prompt": "Give me a list of some of the core beliefs in Stoicism", "original": "Core beliefs in Stoicism include:\n\n1. **Dichotomy of Control**: Distinguishing between what is within our power (thoughts and actions) and what is not (external events).\n2. **Virtue as the Sole Good**: Living in accordance with wisdom, justice, courage, and temperance.\n3. **Living in Accordance with Nature**: Using human reason to align oneself with the rational structure of the universe.\n4. **Emotional Regulation**: Overcoming destructive passions through logic and objective judgment.\n5. **Amor Fati**: Embracing fate and accepting all occurrences as necessary components of the cosmic order.", "rewrite": "Stoicism is built upon several fundamental principles:\n\n* **The Dichotomy of Control**: Focusing energy only on what we can influence, such as our own thoughts and actions, while accepting external events as beyond our command.\n* **Virtue as the Only True Good**: Prioritizing wisdom, justice, courage, and temperance as the essential components of a good life.\n* **Living According to Nature**: Utilizing human reason to align our lives with the universe's rational order.\n* **Emotional Regulation**: Using logic to manage and overcome destructive passions.\n* **Amor Fati**: Fully embracing fate and accepting everything that happens."}, {"item_id": "H000", "prompt": "Why do we feel worse at night when we have a cold or the flu?", "original": "Symptoms often intensify at night due to the body's circadian rhythm. Cortisol, a natural anti-inflammatory hormone, levels drop in the evening, allowing inflammation and immune responses to surge, which increases aches and fever. Additionally, lying flat causes mucus to pool in the sinuses and throat, worsening congestion and coughs. The lack of environmental distractions also forces you to focus more acutely on physical discomfort, making the sensations feel more intense than during the busy daytime hours.", "rewrite": "At night, two things make cold and flu symptoms feel worse. First, your body's internal clock boosts infection-fighting inflammatory chemicals while you sleep, ramping up fever, aches, and stuffiness. Second, lying down lets mucus collect in your sinuses and throat, triggering more coughing and congestion. Lower cortisol at night also weakens your natural anti-inflammatory response, so pain feels sharper. And with fewer distractions, you notice every symptom more."}, {"item_id": "H102", "prompt": "What is the Auburn Ski Club?", "original": "The Auburn Ski Club is a student organization at Auburn University dedicated to promoting interest in snow sports, including skiing and snowboarding. The club provides members with opportunities to participate in group trips to various ski resorts, social events, and educational workshops. It serves as a community for enthusiasts to share experiences, travel together, and engage in outdoor winter activities, regardless of their skill level. Membership typically involves access to organized travel arrangements and a network of fellow outdoor adventurers within the university.", "rewrite": "The Auburn Ski Club is an Auburn University student organization focused on fostering an interest in snowboarding and skiing. By offering social events, educational workshops, and group trips to different ski resorts, the club builds a community for enthusiasts of all skill levels to connect and adventure together. Members benefit from organized travel arrangements and a built-in network of fellow outdoor adventurers. Through these shared experiences and activities, the club provides a way for students to engage in winter sports and connect with others who enjoy the outdoors."}, {"item_id": "H077", "prompt": "How many letters there are in the Japanese language?", "original": "Japanese does not use an alphabet of letters; instead, it uses three distinct writing systems: Hiragana, Katakana, and Kanji. Hiragana and Katakana are syllabaries, where each character represents a syllable (mora) rather than a single letter. Hiragana consists of 46 basic characters, and Katakana also consists of 46 basic characters. Kanji are logograms borrowed from Chinese, with thousands of characters used to represent words or concepts. Therefore, there is no single count of \"letters\" in the Japanese language.", "rewrite": "Japanese doesn’t have letters like an alphabet. It uses three writing systems: Hiragana, Katakana, and Kanji. Hiragana and Katakana are syllabaries—each character stands for a syllable (mora), not a single letter. Each has 46 basic characters. Kanji are logograms taken from Chinese, with thousands of characters representing words or ideas. So there’s no single number of “letters” in Japanese."}, {"item_id": "H074", "prompt": "What are some things to consider when going to a theme park?", "original": "Consider the park's weather forecast and pack accordingly with sunscreen, hats, or rain gear. Research ride wait times and utilize mobile apps to monitor queues or purchase skip-the-line passes. Plan your meal times around off-peak hours to avoid crowds, and budget for extra expenses like souvenirs or snacks. Wear comfortable, broken-in walking shoes and bring a portable charger for your phone. Finally, check for any height requirements or operational closures in advance to ensure you can experience all the attractions you desire.", "rewrite": "Check the weather forecast and pack sunscreen, hats, or rain gear. Look into ride wait times, use apps to track lines or buy skip-the-line passes. Eat at off-peak times to dodge crowds, and budget for extras like souvenirs and snacks. Wear comfortable, already-broken-in walking shoes, and bring a portable phone charger. Also check height requirements and possible ride closures ahead of time so you can do everything you want."}, {"item_id": "H073", "prompt": "Is golf an easy sport?", "original": "No, golf is not an easy sport. It requires precise coordination, consistent technique, and mental discipline. Even skilled athletes from other sports often struggle with golf’s difficulty. The margin for error is tiny, and course conditions, wind, and pressure add challenges. While anyone can occasionally hit a good shot, mastering golf to a high level takes years of practice. For most people, it is frustratingly hard.", "rewrite": "Golf is far from an easy sport. Achieving mastery requires intense mental discipline, consistent technique, and precise physical coordination. Even elite athletes from different disciplines frequently find it difficult to adapt. Because the margin for error is so slim, players must contend with environmental variables like wind and varying course conditions, alongside psychological pressure. Although an amateur might stumble upon a great shot, reaching a high level of proficiency demands years of dedicated practice. For the average person, the sport is often frustratingly challenging."}, {"item_id": "H011", "prompt": "How many minutes in a football match?", "original": "A standard association football match consists of 90 minutes, divided into two 45-minute halves. This does not include halftime or additional stoppage time added by the referee to compensate for injuries, substitutions, or other delays.", "rewrite": "A standard association football match lasts 90 minutes, split into two 45-minute halves. Note that this duration excludes halftime and any stoppage time the referee adds to account for delays such as substitutions, injuries, or other interruptions."}, {"item_id": "H096", "prompt": "How do I choose a new phone?", "original": "To choose a new phone, first define your budget and operating system preference (iOS or Android). Next, prioritize your primary use case: choose a device with a superior camera if you are a photographer, a large battery if you travel frequently, or a high-refresh-rate processor for gaming. Evaluate physical factors like screen size and durability. Finally, check for long-term software support lifespans and connectivity requirements, such as 5G compatibility, to ensure the device remains functional and fast for several years.", "rewrite": "Start by deciding your budget and whether you want iOS or Android. Then pick features based on how you use the phone: for media, focus on battery and screen; for gaming, a fast processor; for photos, better cameras. Make sure storage fits your needs, and think about accessories and services. Lastly, read expert reviews and check how long the phone will get software updates, so it stays secure and usable for years."}, {"item_id": "H087", "prompt": "Write a letter to a home seller named Ms Johnson explaining why we are interested in purchasing her home. We are a person from Washington and a person from Colorado. Focus on the natural beauty of the home, the location, and the extra space for pottery and woodworking.", "original": "Dear Ms. Johnson,\n\nWe are writing to express our sincere interest in your beautiful home. Coming from Washington and Colorado, we have a profound appreciation for the stunning natural beauty surrounding your property. We have been searching for a location that feels both serene and connected to the landscape, and your home is truly special. Most importantly, the additional space is a dream come true for us; we are eager to establish dedicated studios for our pottery and woodworking. We would be honored to care for your home and bring our creative passions to life there.", "rewrite": "Dear Ms. Johnson,\n\nWe're writing to tell you how interested we are in buying your home. Since one of us is from Washington and the other from Colorado, we deeply value the natural beauty that surrounds your property. We've been looking for a place that's peaceful and closely tied to the landscape, and your home fits that perfectly. Above all, the extra space is ideal for us—we want to set up studios for pottery and woodworking. It would be an honor to take care of your home and pursue our creative work there."}, {"item_id": "H103", "prompt": "When has the movie The Ride been released", "original": "The movie *The Ride* (2024), starring C. Thomas Howell, was released on June 14, 2024, in the United States.", "rewrite": "*The Ride* was released in theaters across the United States on June 21, 2024."}, {"item_id": "H025", "prompt": "Hindi Diwas is observed every year on which date?", "original": "Hindi Diwas is observed every year on September 14.", "rewrite": "Hindi Diwas is celebrated every year on September 14."}, {"item_id": "H078", "prompt": "Who was Amilcare Ponchielli?", "original": "Amilcare Ponchielli (1808–1886) was a prominent Italian composer of the Romantic era, best known for his contributions to opera. His most enduring masterpiece is *La Gioconda*, which remains a staple of the operatic repertoire. Ponchielli was a significant figure in the transition between the bel canto style and the more dramatic verismo movement. He was also a respected teacher and conductor, influencing a generation of composers, including Giacomo Puccini. His works are characterized by lush orchestration and dramatic intensity, reflecting the grand operatic traditions of 19th-century Italy.", "rewrite": "Amilcare Ponchielli (1808–1886) was a notable Italian composer from the Romantic period, primarily known for his operas. His most lasting work is *La Gioconda*, still regularly performed. He played a key role in bridging bel canto and verismo. Also a teacher and conductor, he influenced composers like Giacomo Puccini. His music features rich orchestration and dramatic power, embodying 19th-century Italian grand opera."}, {"item_id": "H060", "prompt": "Who were the Sumerians?", "original": "The Sumerians were an ancient civilization inhabiting southern Mesopotamia (modern-day Iraq) during the late Neolithic and Bronze Age. Recognized as one of the world's earliest complex societies, they established independent city-states like Uruk and Ur. They are credited with profound innovations, including the invention of cuneiform writing, the wheel, advanced irrigation, and mathematics based on the number 60. Their culture was characterized by organized religion centered around ziggurats, a structured social hierarchy, and foundational epic literature, such as the Epic of Gilgamesh, which deeply influenced subsequent Mesopotamian civilizations.", "rewrite": "The Sumerians were an ancient civilization located in southern Mesopotamia, in what is now Iraq, during the late Neolithic and Bronze Age. As one of history's first complex societies, they built independent city-states, including Ur and Uruk. Their legacy includes transformative inventions like the wheel, irrigation systems, mathematics using a base-60 system, and cuneiform writing. Sumerian life featured a structured social hierarchy, religion centered on ziggurats, and influential epic literature, most notably the Epic of Gilgamesh, which shaped later Mesopotamian cultures."}, {"item_id": "H059", "prompt": "What year did the Calgary Flames win the Stanley Cup?", "original": "The Calgary Flames won the Stanley Cup in 1989.", "rewrite": "The Calgary Flames captured the Stanley Cup in 1989."}, {"item_id": "H023", "prompt": "What is a mammal?", "original": "A mammal is a warm-blooded vertebrate animal with hair or fur, three middle ear bones, and mammary glands that produce milk to feed its young. Most mammals give birth to live young, though monotremes lay eggs. They breathe air, have a four-chambered heart, and include humans, dogs, whales, and bats.", "rewrite": "Mammals are warm-blooded vertebrates characterized by the presence of hair or fur, three bones in the middle ear, and mammary glands used to nurse their offspring with milk. While most species give birth to live young, monotremes are an exception that lay eggs. These animals breathe air and possess a four-chambered heart. Examples of mammals include humans, dogs, bats, and whales."}, {"item_id": "H107", "prompt": "Which country makes the best coffee in the world?", "original": "There is no single objective answer, as \"best\" is subjective and depends on personal preference; however, Ethiopia is widely considered the birthplace of coffee and produces highly acclaimed beans known for their complex floral and fruity profiles. Other top contenders frequently cited by connoisseurs include Colombia for its balanced acidity and sweetness, Brazil for its nutty and chocolatey notes, and Kenya for its bright, wine-like acidity. Ultimately, the best coffee is a matter of individual taste.", "rewrite": "You can't really name one best coffee country because \"best\" is subjective and comes down to personal taste. That said, Ethiopia is often seen as coffee's birthplace and is praised for complex, floral, fruity beans. Other names connoisseurs bring up a lot are Colombia (balanced acidity and sweetness), Brazil (nutty, chocolatey notes), and Kenya (bright, wine-like acidity). In the end, the best coffee depends on what you personally like."}, {"item_id": "H047", "prompt": "Which City in San Diego County is considered a great place to live and raise a family?", "original": "Carlsbad is widely considered the best city in San Diego County for raising a family, known for its top-rated schools, low crime, beaches, parks, and family-friendly community.", "rewrite": "Many consider Carlsbad to be the premier location in San Diego County for families. It is highly regarded for its excellent school systems, safety, and abundance of parks and beaches, all of which contribute to a welcoming, family-oriented community."}, {"item_id": "H034", "prompt": "How many Harry Potter books are there?", "original": "There are seven Harry Potter books in the main series, written by J.K. Rowling.", "rewrite": "J.K. Rowling wrote the main Harry Potter series, which consists of seven books."}, {"item_id": "H099", "prompt": "What is a Synchronous Concurrent Algorithm (SCA)?", "original": "A Synchronous Concurrent Algorithm (SCA) is an algorithm in which multiple processes execute in lockstep, coordinated by a global clock, so all processes read inputs, compute, and update shared state in synchronized rounds. Communication and state changes happen at discrete time steps, making behavior deterministic and easier to verify. SCAs are common in synchronous distributed systems, cellular automata, and parallel computation models, where each round depends only on the previous round's global state.", "rewrite": "A Synchronous Concurrent Algorithm (SCA) runs multiple processes in lockstep under a global clock. In synchronized rounds, all processes read inputs, compute, and update shared state together. Because communication and state changes occur at discrete time steps, behavior is deterministic and easier to verify. You'll find SCAs in synchronous distributed systems, cellular automata, and parallel computation models, where each round depends only on the previous round's global state."}, {"item_id": "H028", "prompt": "Why is breaking up so hard to do?", "original": "Breaking up is hard because it means losing attachment, shared identity, and future plans. Your brain treats rejection and separation like physical pain, while guilt and fear of hurting someone you care about create inner conflict. Even when the relationship is unhealthy, familiarity feels safer than uncertainty. You grieve not just the person but the life you imagined together.", "rewrite": "Ending a relationship is painful because it involves the loss of attachment, a shared sense of identity, and the future you envisioned. Neurologically, your brain processes emotional rejection and separation similarly to physical pain. This difficulty is compounded by the inner conflict of feeling guilt or fearing you might hurt someone you love. Even in unhealthy situations, the familiarity of a partner can feel safer than the unknown. Ultimately, you aren't just grieving a person; you are grieving the life you had imagined building with them."}, {"item_id": "H090", "prompt": "Give me a list of the top MLB home run leaders of all time.", "original": "The top MLB home run leaders of all time are:\n\n1. Barry Bonds: 762\n2. Hank Aaron: 755\n3. Babe Ruth: 714\n4. Albert Pujols: 703\n5. Alex Rodriguez: 696", "rewrite": "The all-time leaders in career MLB home runs are:\n\n1. Barry Bonds (762)\n2. Hank Aaron (755)\n3. Babe Ruth (714)\n4. Albert Pujols (703)\n5. Alex Rodriguez (696)"}, {"item_id": "H053", "prompt": "Write a diary entry about a real life incident on your recent trip with your family", "original": "April 14th. On our drive through the mountains, Dad pulled over for a photo. He left the car in gear. It rolled backward toward a steep drop. Mom screamed. My brother jumped out and yanked the handbrake. We sat in silence, hearts pounding. Then we all laughed, shaky and relieved. Dad bought us all ice cream. We didn't tell anyone for two days. I'll never forget that sound of the car moving on its own.", "rewrite": "April 14th. While driving through the mountains, Dad stopped for a photo and left the car in gear. It started rolling backward toward a steep drop. Mom screamed. My brother jumped out and pulled the handbrake. We sat in silence, hearts pounding, then laughed, shaky and relieved. Dad bought us ice cream. We told no one for two days. I'll never forget the sound of the car moving on its own."}, {"item_id": "H084", "prompt": "What is a good soccer club in Lake Washington area in the USA?", "original": "Seattle Sounders FC is the premier professional club in the region, playing at Lumen Field in nearby Seattle. For youth development, Lake Washington Soccer Club (LWSC) is a highly regarded community organization serving the Eastside area, offering competitive and recreational programs for various age groups.", "rewrite": "If you are looking for professional soccer, the Seattle Sounders FC is the top club in the region, playing their home matches at Lumen Field in Seattle. For youth players, the Lake Washington Soccer Club (LWSC) is an excellent choice; they are a well-respected community organization on the Eastside that provides both competitive and recreational programs for many different age groups."}, {"item_id": "H050", "prompt": "Which episode of The X-Files did Dana Scully get diagnosed with cancer?", "original": "Dana Scully is diagnosed with cancer in the Season 7 episode titled \"all guilty.\"", "rewrite": "Scully is diagnosed with cancer in the Season 7 episode \"all guilty.\""}, {"item_id": "H040", "prompt": "What is the downside of using mulch for your landscape?", "original": "The main downside of mulch is that it can harbor pests and diseases, and if applied too thickly it suffocates plant roots by reducing oxygen and water penetration. It can also become moldy, attract termites, and, in the case of wood mulch, temporarily tie up nitrogen in the soil.", "rewrite": "While beneficial, mulch has several drawbacks. If applied in excessive layers, it can block oxygen and water from reaching roots, effectively suffocating them. It also carries the risk of harboring diseases and pests, such as termites, or developing mold. Additionally, using wood-based mulch can lead to a temporary depletion of nitrogen in the soil."}, {"item_id": "H093", "prompt": "What is a mitochondrial matrix?", "original": "The mitochondrial matrix is the gel-like space enclosed by the inner mitochondrial membrane. It contains enzymes for the citric acid cycle, mitochondrial DNA, ribosomes, and ATP synthase. It is the site of pyruvate oxidation and the citric acid cycle, and it plays a key role in ATP production through oxidative phosphorylation.", "rewrite": "The mitochondrial matrix is the gel-like interior space bounded by the inner mitochondrial membrane. This compartment houses ribosomes, mitochondrial DNA, and the enzymes necessary for the citric acid cycle. Serving as the location for both the citric acid cycle and pyruvate oxidation, the matrix is essential for generating ATP via oxidative phosphorylation."}, {"item_id": "H003", "prompt": "Can you suggest other house hold items that can be used instead of a hammer ?", "original": "You can use a heavy wrench, a mallet, or a large stone to drive nails. A heavy screwdriver with a thick handle can work for light tasks, while a hammer-style heavy kitchen tool like a meat tenderizer can serve as an alternative. For flattening or crushing, a heavy rolling pin or a sturdy cast-iron skillet works well. Always ensure the object is solid, heavy enough to provide momentum, and won't shatter upon impact.", "rewrite": "A heavy wrench, mallet, or big stone can drive nails. A thick-handled heavy screwdriver handles light jobs. A meat tenderizer works like a hammer. For crushing or flattening, use a heavy rolling pin or a sturdy cast-iron skillet. Just make sure whatever you pick is solid, has enough weight for momentum, and won't break on impact."}, {"item_id": "H070", "prompt": "What is John Ellis water and the bond angle of water?", "original": "John Ellis water refers to a specific theoretical model or substance discussed in the context of the anomalous properties of water, though it is less common in standard textbooks than the \"anomalous properties of water\" themselves. The bond angle of a standard water molecule ($\\text{H}_2\\text{O}$) is approximately $104.5^\\circ$, resulting from the repulsion between two lone pairs of electrons on the oxygen atom and the two bonding pairs of electrons.", "rewrite": "John Ellis water is a specific theoretical model or substance talked about when discussing water’s anomalous properties, though it appears less often in standard textbooks than the anomalous properties of water themselves. The bond angle of a normal water molecule (H₂O) is about 104.5°, caused by repulsion among the oxygen atom’s two lone pairs and two bonding pairs of electrons."}, {"item_id": "H031", "prompt": "Write a review of Carlos Ruiz Zafon's book The Shadow of the Wind", "original": "Zafón’s *The Shadow of the Wind* is a gothic love letter to books. In post-war Barcelona, Daniel’s search for a mysterious author becomes a haunting, layered mystery. The Cemetery of Forgotten Books is unforgettable, and the prose is atmospheric and lush. Some melodrama creeps in, but the novel’s passion for storytelling and its shadowy, romantic mood make it irresistible. A must-read for bibliophiles.", "rewrite": "Set in post-war Barcelona, Zafón’s *The Shadow of the Wind* serves as a lush, gothic tribute to the magic of reading. The story follows Daniel as he investigates a mysterious author, leading him through the unforgettable Cemetery of Forgotten Books in a layered, haunting mystery. While the narrative occasionally leans into melodrama, the atmospheric prose and romantic, shadowy mood remain irresistible. It is an essential read for bibliophiles due to its profound passion for storytelling."}, {"item_id": "H014", "prompt": "What is a 'Public' School in the UK?", "original": "In the UK, a \"public\" school is a fee-charging, independent private school. The name is historical: these schools were originally open to any paying member of the public, unlike charity or church schools. They are elite institutions, often boarding, such as Eton and Harrow. Confusingly, they are not state-funded or free to attend. State-funded schools for the general public are called \"state schools\" or \"comprehensive schools.\"", "rewrite": "Counterintuitively, a \"public\" school in the UK refers to an elite, fee-paying independent school rather than a state-funded one. The term is a historical relic from when these institutions were opened to any paying member of the public, distinguishing them from church or charity schools. Typically involving boarding, these prestigious institutions include famous examples like Eton and Harrow. They are not free to attend; instead, schools funded by the government for the general population are categorized as \"state schools\" or \"comprehensive schools.\""}, {"item_id": "H109", "prompt": "Is Gillian Anderson an English actress?", "original": "Gillian Anderson is an American actress. She was born in Chicago and holds dual American and British citizenship, but she is not English by nationality or birth.", "rewrite": "Yes, Gillian Anderson is an English actress. She was born in Chicago, but as a child she moved to London, and she has dual British and American citizenship. She is well known for her roles in The X-Files, The Fall, and Sex Education."}, {"item_id": "H043", "prompt": "Where are good places to go for vacation?", "original": "Costa Rica’s Pacific coast offers beaches, rainforests, and wildlife. Iceland’s Ring Road delivers waterfalls, glaciers, and volcanoes. Japan’s Kyoto and Tokyo combine temples with modern food and culture. Italy’s Amalfi Coast provides cliffs, sea views, and historic towns. New Zealand’s South Island features fjords, mountains, and adventure sports. For a U.S. option, the Oregon coast has dramatic scenery and small towns.", "rewrite": "Depending on your interests, you might explore Costa Rica’s Pacific coast for its blend of rainforests, wildlife, and beaches, or drive Iceland’s Ring Road to see volcanoes, glaciers, and waterfalls. For culture and food, Japan offers a mix of modern life and temples in Tokyo and Kyoto. If you prefer historic towns and sea views, consider Italy’s Amalfi Coast, or head to New Zealand’s South Island for mountains, fjords, and adventure. For a domestic U.S. trip, the Oregon coast provides small towns and dramatic scenery."}, {"item_id": "H017", "prompt": "What were the Gorgons of Greek mythology?", "original": "The Gorgons were three monstrous sisters in Greek mythology—Stheno, Euryale, and Medusa. They had snakes for hair, and their gaze could turn people to stone. Medusa was mortal; her sisters were immortal. The hero Perseus beheaded Medusa using a reflective shield.", "rewrite": "In Greek mythology, the Gorgons were a trio of monstrous sisters consisting of the immortal Stheno and Euryale, and the mortal Medusa. Characterized by hair made of living snakes, they possessed the terrifying ability to turn anyone who looked at them into stone. While her sisters could not be killed, Medusa was eventually slain by the hero Perseus."}]}</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("data").textContent);
+  var LABELS = DATA.labels;
+  var STORE = "rewrite-check:" + DATA.sheet;
+  var state = {}, storage = true;
+  try {
+    localStorage.setItem(STORE + ":probe", "1"); localStorage.removeItem(STORE + ":probe");
+    state = JSON.parse(localStorage.getItem(STORE) || "{}") || {};
+  } catch (e) { state = {}; storage = false; }
+  if (!storage) document.getElementById("storage-warning").classList.remove("hidden");
+  var onlyUnfinished = false;
+
+  function save() {
+    if (storage) { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { storage = false; document.getElementById("storage-warning").classList.remove("hidden"); } }
+    refresh();
+  }
+  function entry(id) { if (!state[id]) state[id] = {}; return state[id]; }
+  function complete(id) { var s = state[id] || {}; return LABELS.every(function (l) { return s[l[0]] === "Y" || s[l[0]] === "N"; }); }
+  function words(t) { var m = t.trim().match(/\S+/g); return m ? m.length : 0; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function toast(msg) {
+    var t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast.timer); toast.timer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  function textBox(tag, body) {
+    var box = el("div", "text");
+    var head = el("span", "tag", tag + " ");
+    head.appendChild(el("span", "count", "(" + words(body) + " words)"));
+    box.appendChild(head);
+    box.appendChild(el("div", "body", body));
+    return box;
+  }
+
+  function render() {
+    var root = document.getElementById("items");
+    root.textContent = "";
+    DATA.items.forEach(function (item, n) {
+      var card = el("section", "item"); card.id = "item-" + item.item_id; card.dataset.id = item.item_id;
+      var head = el("div", "head");
+      head.appendChild(el("span", "id", (n + 1) + " / " + DATA.items.length + "  ·  " + item.item_id));
+      head.appendChild(el("span", "status"));
+      card.appendChild(head);
+      var prompt = el("div", "prompt"); prompt.appendChild(el("span", "tag", "Prompt")); prompt.appendChild(document.createTextNode(item.prompt || "(no prompt text)"));
+      card.appendChild(prompt);
+      var pair = el("div", "pair");
+      pair.appendChild(textBox("Original", item.original));
+      pair.appendChild(textBox("Rewrite", item.rewrite));
+      card.appendChild(pair);
+      var labels = el("div", "labels");
+      LABELS.forEach(function (l) {
+        var key = l[0], q = el("div", "q");
+        q.appendChild(el("span", "name", l[1]));
+        var choices = el("span", "choices");
+        ["Y", "N"].forEach(function (v) {
+          var id = item.item_id + "-" + key + "-" + v;
+          var input = document.createElement("input");
+          input.type = "radio"; input.name = item.item_id + "-" + key; input.id = id; input.value = v; input.className = v.toLowerCase();
+          input.checked = (state[item.item_id] || {})[key] === v;
+          input.addEventListener("change", function () { entry(item.item_id)[key] = v; save(); });
+          var label = el("label", null, v); label.htmlFor = id;
+          choices.appendChild(input); choices.appendChild(label);
+        });
+        q.appendChild(choices);
+        q.appendChild(el("span", "question", l[2]));
+        labels.appendChild(q);
+      });
+      var notes = document.createElement("textarea");
+      notes.placeholder = "Notes (optional)"; notes.value = (state[item.item_id] || {}).notes || "";
+      notes.addEventListener("input", function () { entry(item.item_id).notes = notes.value; save(); });
+      labels.appendChild(notes);
+      card.appendChild(labels);
+      root.appendChild(card);
+    });
+    refresh();
+  }
+
+  function refresh() {
+    var done = 0;
+    DATA.items.forEach(function (item) {
+      var ok = complete(item.item_id); if (ok) done++;
+      var card = document.getElementById("item-" + item.item_id); if (!card) return;
+      card.classList.toggle("complete", ok);
+      card.querySelector(".status").textContent = ok ? "done" : "to do";
+      card.classList.toggle("hidden", onlyUnfinished && ok);
+    });
+    document.getElementById("fill").style.width = (100 * done / DATA.items.length) + "%";
+    document.getElementById("progress-text").textContent = done + " of " + DATA.items.length + " items labeled";
+  }
+
+  function csvCell(v) { v = v == null ? "" : String(v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function exportCsv() {
+    var header = ["item_id", "prompt", "original", "rewrite"].concat(LABELS.map(function (l) { return l[0]; }), ["notes"]);
+    var lines = [header.join(",")];
+    DATA.items.forEach(function (item) {
+      var s = state[item.item_id] || {};
+      var row = [item.item_id, item.prompt, item.original, item.rewrite].concat(LABELS.map(function (l) { return s[l[0]] || ""; }), [s.notes || ""]);
+      lines.push(row.map(csvCell).join(","));
+    });
+    var blob = new Blob([lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sheet_" + DATA.sheet + ".csv";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    var left = DATA.items.length - DATA.items.filter(function (i) { return complete(i.item_id); }).length;
+    toast(left ? "Exported. " + left + " items still unlabeled." : "Exported. All items labeled.");
+  }
+
+  function parseCsv(text) {
+    var rows = [], row = [], cell = "", i = 0, quoted = false;
+    if (text.charCodeAt(0) === 0xFEFF) i = 1;
+    for (; i < text.length; i++) {
+      var c = text[i];
+      if (quoted) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else quoted = false; } else cell += c;
+      } else if (c === '"') quoted = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function importCsv(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var rows = parseCsv(String(reader.result)); if (!rows.length) return;
+      var head = rows[0], col = {}; head.forEach(function (h, j) { col[h.trim()] = j; });
+      var known = {}; DATA.items.forEach(function (i) { known[i.item_id] = true; });
+      var n = 0;
+      rows.slice(1).forEach(function (r) {
+        var id = r[col.item_id]; if (!known[id]) return;
+        var e = entry(id);
+        LABELS.forEach(function (l) { var v = (r[col[l[0]]] || "").trim().toUpperCase().charAt(0); if (v === "Y" || v === "N") e[l[0]] = v; });
+        if (col.notes != null && r[col.notes]) e.notes = r[col.notes];
+        n++;
+      });
+      save(); render(); toast("Imported labels for " + n + " items.");
+    };
+    reader.readAsText(file, "utf-8");
+  }
+
+  document.getElementById("export").addEventListener("click", exportCsv);
+  document.getElementById("import").addEventListener("change", function (e) { if (e.target.files[0]) importCsv(e.target.files[0]); e.target.value = ""; });
+  document.getElementById("next").addEventListener("click", function () {
+    var next = DATA.items.find(function (i) { return !complete(i.item_id); });
+    if (next) document.getElementById("item-" + next.item_id).scrollIntoView({ behavior: "smooth", block: "start" });
+    else toast("Every item is labeled.");
+  });
+  document.getElementById("filter").addEventListener("click", function (e) {
+    onlyUnfinished = !onlyUnfinished; e.target.setAttribute("aria-pressed", String(onlyUnfinished));
+    e.target.textContent = onlyUnfinished ? "Show all items" : "Show unfinished only"; refresh();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

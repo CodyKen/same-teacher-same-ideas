@@ -35,8 +35,8 @@ from sameteacher.eval.stats import bootstrap_means, percentile_interval
 SECTION = "main_teacher_match"
 
 
-def cache_paths(run_dir, embedder: str) -> tuple[Path, Path]:
-    stem = Path(run_dir) / "cache" / f"main_h1__{embedder.replace('/', '-')}"
+def cache_paths(run_dir, embedder: str, name: str = "main_h1") -> tuple[Path, Path]:
+    stem = Path(run_dir) / "cache" / f"{name}__{embedder.replace('/', '-')}"
     return stem.with_suffix(".npy"), stem.with_suffix(".json")
 
 
@@ -44,9 +44,9 @@ def key_name(pid: str, key: tuple) -> str:
     return "|".join([pid, *map(str, key)])
 
 
-def embed_cached(run_dir, texts, index, embedder: str) -> np.ndarray:
-    """The H1 embedding matrix, saved with its text index for later analyses."""
-    matrix_path, index_path = cache_paths(run_dir, embedder)
+def embed_cached(run_dir, texts, index, embedder: str, name: str = "main_h1", note: str = "") -> np.ndarray:
+    """An embedding matrix saved with its text index for later analyses (the H1 texts by default)."""
+    matrix_path, index_path = cache_paths(run_dir, embedder, name)
     digest = hashlib.sha256("\n".join(texts).encode()).hexdigest()
     if matrix_path.exists() and index_path.exists() and json.loads(index_path.read_text())["texts_sha256"] == digest:
         return np.load(matrix_path)
@@ -57,7 +57,7 @@ def embed_cached(run_dir, texts, index, embedder: str) -> np.ndarray:
     index_path.write_text(json.dumps({
         "embedder": embedder,
         "texts_sha256": digest,
-        "note": "Rows are the main_shared_teacher texts, cut to one word budget per prompt. Keys: prompt|base|teacher|seed for students, prompt|teacher|name for teachers.",
+        "note": note or "Rows are the main_shared_teacher texts, cut to one word budget per prompt. Keys: prompt|base|teacher|seed for students, prompt|teacher|name for teachers.",
         "index": {key_name(pid, key): rows for (pid, key), rows in index.items()},
     }))
     return matrix

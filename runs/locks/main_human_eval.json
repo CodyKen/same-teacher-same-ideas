@@ -1,0 +1,14 @@
+{
+  "section": "main_human_eval",
+  "sha256": "488e76d961b41f4f7982adc887f0316ea76ef0f3b1396f8876ec43d56dacb999",
+  "locked_at": "2026-11-06T13:21:50.217313+00:00",
+  "values": {
+    "pairs_per_kind": 75,
+    "annotators": 3,
+    "seed": 20261108,
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "bootstrap": 2000,
+    "bootstrap_seed": 0,
+    "ci_level": 0.95
+  }
+}

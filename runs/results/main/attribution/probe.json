@@ -1,0 +1,114 @@
+{
+  "prompts": 187,
+  "test_answers_per_stage": 75300,
+  "chance": 0.3333333333333333,
+  "stages": [
+    "written",
+    "rewritten"
+  ],
+  "written pooled": {
+    "estimate": 0.4237715803452855,
+    "ci_low": 0.4137019572385753,
+    "ci_high": 0.43387208384595105
+  },
+  "written base X": {
+    "estimate": 0.4280581283934845,
+    "ci_low": 0.41540487269039533,
+    "ci_high": 0.44022269979655443
+  },
+  "written base Y": {
+    "estimate": 0.4214157527417747,
+    "ci_low": 0.41006478543782965,
+    "ci_high": 0.4327256771311181
+  },
+  "written base Z": {
+    "estimate": 0.4218532787861938,
+    "ci_low": 0.40981385288103556,
+    "ci_high": 0.4336642196523789
+  },
+  "written teacher deepseek": {
+    "estimate": 0.4396990925011941,
+    "ci_low": 0.39124219801197635,
+    "ci_high": 0.48861558674091743
+  },
+  "written teacher gemma": {
+    "estimate": 0.5170307071836441,
+    "ci_low": 0.4695665958914757,
+    "ci_high": 0.564378860211207
+  },
+  "written teacher glm": {
+    "estimate": 0.3149246011220308,
+    "ci_low": 0.2782139927496895,
+    "ci_high": 0.3550272205093123
+  },
+  "rewritten pooled": {
+    "estimate": 0.4005046480743692,
+    "ci_low": 0.392714436429286,
+    "ci_high": 0.40785993350551
+  },
+  "rewritten base X": {
+    "estimate": 0.4034653465346535,
+    "ci_low": 0.3945230072949682,
+    "ci_high": 0.41217538395255154
+  },
+  "rewritten base Y": {
+    "estimate": 0.4032701894317049,
+    "ci_low": 0.3933861807501808,
+    "ci_high": 0.41310241772070244
+  },
+  "rewritten base Z": {
+    "estimate": 0.3948047821424316,
+    "ci_low": 0.38592760922618063,
+    "ci_high": 0.4040979526423126
+  },
+  "rewritten teacher deepseek": {
+    "estimate": 0.38373666613596563,
+    "ci_low": 0.3380074200739365,
+    "ci_high": 0.42757314968411336
+  },
+  "rewritten teacher gemma": {
+    "estimate": 0.5067284271053788,
+    "ci_low": 0.4629156863834814,
+    "ci_high": 0.5527682890533755
+  },
+  "rewritten teacher glm": {
+    "estimate": 0.31142322842478015,
+    "ci_low": 0.27659948945716456,
+    "ci_high": 0.34973674050451864
+  },
+  "difference pooled": {
+    "estimate": -0.023266932270916307,
+    "ci_low": -0.02912656381138513,
+    "ci_high": -0.017398773945621365
+  },
+  "difference base X": {
+    "estimate": -0.024592781858831014,
+    "ci_low": -0.03303776142268507,
+    "ci_high": -0.015861727921392055
+  },
+  "difference base Y": {
+    "estimate": -0.01814556331006978,
+    "ci_low": -0.026746487564033045,
+    "ci_high": -0.010237405088668357
+  },
+  "difference base Z": {
+    "estimate": -0.027048496643762188,
+    "ci_low": -0.03513846361691924,
+    "ci_high": -0.019181128628728006
+  },
+  "difference teacher deepseek": {
+    "estimate": -0.05596242636522847,
+    "ci_low": -0.08616741132767615,
+    "ci_high": -0.026482585347414808
+  },
+  "difference teacher gemma": {
+    "estimate": -0.01030228007826528,
+    "ci_low": -0.034512332462147174,
+    "ci_high": 0.012102185612949581
+  },
+  "difference teacher glm": {
+    "estimate": -0.0035013726972506487,
+    "ci_low": -0.02739359601157819,
+    "ci_high": 0.020428348158513115
+  }
+}

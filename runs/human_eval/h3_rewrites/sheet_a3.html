@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>H3 Rewrite Check Annotator 3</title>
+<style>
+:root {
+  --bg: #f6f6f3; --card: #ffffff; --fg: #1d1d1b; --muted: #6b6b66; --border: #dcdcd6;
+  --accent: #2f5d8a; --accent-soft: #e6eef6; --yes: #2e7d4f; --no: #b3412f; --done: #eaf4ee;
+  --prompt-bg: #f1efe7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615; --card: #1f1f1d; --fg: #ecece8; --muted: #a2a29b; --border: #3a3a36;
+    --accent: #8db7e0; --accent-soft: #24313d; --yes: #6fcf97; --no: #f08b78; --done: #1e2a22;
+    --prompt-bg: #262520;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161615; --card: #1f1f1d; --fg: #ecece8; --muted: #a2a29b; --border: #3a3a36;
+  --accent: #8db7e0; --accent-soft: #24313d; --yes: #6fcf97; --no: #f08b78; --done: #1e2a22;
+  --prompt-bg: #262520;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+header { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border); }
+.bar { max-width: 1180px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.bar h1 { font-size: 17px; margin: 0 12px 0 0; }
+.progress { flex: 1 1 160px; min-width: 140px; }
+.progress .track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress .fill { height: 100%; width: 0; background: var(--yes); transition: width .2s; }
+.progress .text { font-size: 13px; color: var(--muted); margin-top: 2px; }
+button, label.button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--card); color: var(--fg); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--card); }
+button:hover, label.button:hover { border-color: var(--accent); }
+main { max-width: 1180px; margin: 0 auto; padding: 16px; }
+details.rubric { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; }
+details.rubric summary { cursor: pointer; font-weight: 600; }
+details.rubric dt { font-weight: 600; margin-top: 8px; }
+details.rubric dd { margin: 2px 0 0 0; }
+code { font-size: 0.9em; background: var(--accent-soft); padding: 1px 4px; border-radius: 4px; }
+.item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; scroll-margin-top: 120px; }
+.item.complete { background: var(--done); }
+.item .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.item .id { font-weight: 700; }
+.item .status { font-size: 13px; color: var(--muted); }
+.prompt { background: var(--prompt-bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.prompt .tag, .text .tag { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+.text { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+.text .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.text .count { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.labels { margin-top: 12px; display: grid; gap: 8px; }
+.q { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.q .name { font-weight: 700; width: 56px; }
+.q .question { flex: 1 1 280px; color: var(--muted); font-size: 14px; }
+.choices { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.choices input { position: absolute; opacity: 0; pointer-events: none; }
+.choices label { padding: 4px 16px; cursor: pointer; font-weight: 600; user-select: none; }
+.choices label + input + label { border-left: 1px solid var(--border); }
+.choices input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: -2px; }
+.choices input.y:checked + label { background: var(--yes); color: var(--card); }
+.choices input.n:checked + label { background: var(--no); color: var(--card); }
+textarea { width: 100%; min-height: 38px; resize: vertical; font: inherit; font-size: 14px; padding: 6px 8px;
+  border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); }
+.hidden { display: none; }
+.warning { background: #fff4d6; color: #5a4300; border: 1px solid #e6c766; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .warning { background: #3a3014; color: #f3dc9a; border-color: #7a6424; } }
+:root[data-theme="dark"] .warning { background: #3a3014; color: #f3dc9a; border-color: #7a6424; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--fg); color: var(--bg);
+  padding: 8px 14px; border-radius: 6px; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>H3 rewrite check, Annotator 3</h1>
+    <div class="progress"><div class="track"><div class="fill" id="fill"></div></div><div class="text" id="progress-text"></div></div>
+    <button id="next">Next unfinished</button>
+    <button id="filter" aria-pressed="false">Show unfinished only</button>
+    <label class="button" for="import">Import CSV</label>
+    <input type="file" id="import" accept=".csv,text/csv" class="hidden">
+    <button class="primary" id="export">Export CSV</button>
+  </div>
+</header>
+<main>
+  <div class="warning hidden" id="storage-warning">This browser does not save progress for this page. Labels will be lost if you close or reload it, so click <b>Export CSV</b> often, or open the page in Chrome or Safari.</div>
+  <details class="rubric" id="rubric" open>
+    <summary>Instructions</summary>
+    
+<p>Each item shows a request, an <b>original</b> answer and a <b>rewrite</b>. The rewrite was
+written by another model, asked to restate the original in its own words and its own style,
+keeping every idea, claim, example and recommendation and adding none. A change of voice, length
+or formatting is expected and is not judged: judge only the content. Answer two questions with Y
+or N, and use the notes box for anything unclear.</p>
+<dl>
+  <dt>Kept</dt>
+  <dd><b>Y</b> if every idea, claim, example and recommendation of the original appears in the
+  rewrite. Rewording, merging or splitting sentences, a new tone and new formatting are fine.
+  <b>N</b> if anything of substance is missing or its meaning changed.</dd>
+  <dt>Added</dt>
+  <dd><b>Y</b> if the rewrite states an idea, claim or example that is not in the original.
+  Connecting words, a short restatement of the request and a change of tone do not count.
+  Otherwise <b>N</b>.</dd>
+</dl>
+<p>Work alone, and do not discuss items until every sheet is in. Do not open
+<code>key_DO_NOT_OPEN.json</code>.</p>
+<p>Labels are saved in this browser as you go. When you finish, click <b>Export CSV</b> and put
+the downloaded file in <code>runs/human_eval/h3_rewrites/</code>, replacing the blank sheet of
+the same name. Export also works as a backup at any time; <b>Import CSV</b> loads it back.</p>
+<p>The repository is public and some items are on every sheet, so keep your filled sheet to
+yourself until all three sheets are done. Then commit it, or send it to the person who runs the
+scoring.</p>
+
+  </details>
+  <div id="items"></div>
+</main>
+<div class="toast" id="toast"></div>
+<script type="application/json" id="data">{"sheet": "a3", "labels": [["kept", "Kept", "Is every idea, claim, example and recommendation of the original in the rewrite?"], ["added", "Added", "Does the rewrite state an idea, claim or example that is not in the original?"]], "items": [{"item_id": "H058", "prompt": "What was the Cold War?", "original": "The Cold War was a period of geopolitical tension and ideological rivalry between the United States and its allies (the Western Bloc) and the Soviet Union and its allies (the Eastern Bloc) that lasted from approximately 1947 to 1991. It was characterized by a struggle between capitalism and communism, nuclear arms racing, and proxy wars in regions like Korea and Vietnam. While the two superpowers never engaged in direct large-scale military conflict, they competed through espionage, propaganda, space exploration, and global political influence.", "rewrite": "The Cold War was a time of geopolitical strain and ideological conflict pitting the US and its allies, the Western Bloc, against the Soviet Union and its allies, the Eastern Bloc, roughly from 1947 to 1991. It centered on a contest between capitalism and communism, a nuclear arms race, and proxy wars such as those in Korea and Vietnam. Although the superpowers avoided direct large-scale fighting, they vied via espionage, propaganda, space exploration, and global political influence."}, {"item_id": "H002", "prompt": "Does having a real cork, artificial cork, or a screw-top have any impact on the quality of a bottle of wine?", "original": "The closure primarily impacts aging potential and oxidation control rather than the initial liquid quality. Natural cork is superior for long-term aging because it allows micro-oxygenation, which develops complex flavors in high-end wines. Artificial corks and screw-caps provide excellent seals and prevent \"cork taint\" (TCA), making them ideal for younger, lighter wines intended for immediate consumption. While screw-caps are technically more consistent at preventing oxidation, a well-chosen closure ensures the wine's intended profile is preserved throughout its lifespan.", "rewrite": "The type of closure mostly affects how the wine ages and how well it avoids oxidation, not the quality of the liquid itself. Natural cork is best for long aging since it lets in a little oxygen, helping high-end wines build complex flavors. Artificial corks and screw caps seal very well and prevent cork taint (TCA), so they suit younger, lighter wines meant to be drunk soon. Screw caps are actually more consistent at stopping oxidation, but picking the right closure keeps the wine's intended character intact over its life."}, {"item_id": "H067", "prompt": "Explain in few words how traditional exploratory data analysis (in statistics) is different from machine learning?", "original": "Traditional exploratory data analysis focuses on understanding data structure, patterns, and assumptions through visualization and summary statistics, often with human interpretation. Machine learning focuses on building predictive models that generalize to new data, optimizing performance metrics automatically, with less emphasis on explaining the data itself.", "rewrite": "Traditional exploratory data analysis is about understanding the data’s structure, patterns, and assumptions using visualization and summary statistics, usually with human interpretation. Machine learning is about creating predictive models that generalize to new data, optimizing performance metrics automatically, and placing less emphasis on explaining the data itself."}, {"item_id": "H059", "prompt": "What year did the Calgary Flames win the Stanley Cup?", "original": "The Calgary Flames won the Stanley Cup in 1989.", "rewrite": "The Calgary Flames captured the Stanley Cup in 1989."}, {"item_id": "H033", "prompt": "Complete the joke 'A Large Language Model enters a bar'", "original": "A Large Language Model enters a bar. The bartender says, \"What can I get you?\" The LLM replies, \"I can't answer that without knowing the bar's location, current specials, your alcohol license, and whether this conversation is being used for training. Also, I must remind you that drinking is harmful, but here's a 500-word essay on the history of gin.\"", "rewrite": "A Large Language Model walks into a bar. The bartender asks, \"What'll it be?\" The LLM responds, \"I am unable to fulfill that request without additional context, such as your location, current menu specials, and alcohol license, and I need to know if this interaction will be used for training purposes. Furthermore, I must provide a disclaimer that alcohol consumption is harmful; however, I can provide you with a 500-word essay regarding the historical evolution of gin.\""}, {"item_id": "H062", "prompt": "Is a vitamin d supplement good for you?", "original": "Yes, a vitamin D supplement is good for you if you have or are at risk of deficiency. It supports bone health, immune function, and muscle function. Many people don’t get enough from sunlight and diet, especially in winter or northern climates. However, too much can be harmful, so avoid high doses unless a doctor recommends them. Typical safe doses are 600–800 IU daily for most adults, but your needs may vary.", "rewrite": "Vitamin D supplements are beneficial if you are deficient or at risk of deficiency, as they support muscle, immune, and bone health. Because diet and sunlight are often insufficient—particularly in northern climates or during winter—supplementation can help. However, you should avoid excessive doses unless directed by a doctor, as too much can be harmful. While individual needs vary, a typical safe daily amount for most adults is between 600 and 800 IU."}, {"item_id": "H106", "prompt": "What are the benefits of minimally-invasive orthopedic surgery?", "original": "Minimally-invasive orthopedic surgery offers smaller incisions, less muscle and tissue damage, reduced pain, less blood loss, and lower infection risk. Patients typically recover faster, spend less time in the hospital, and return to normal activities sooner with less scarring.", "rewrite": "By utilizing smaller incisions, minimally invasive orthopedic surgery minimizes tissue and muscle damage while reducing blood loss and infection risks. This approach typically results in less postoperative pain, shorter hospital stays, and a faster return to daily life. Scarring is also significantly reduced. For procedures such as fracture repair, spine surgery, and joint replacements, these methods provide outcomes that are comparable to, or even superior to, traditional open surgery."}, {"item_id": "H072", "prompt": "In the series A Song of Ice and Fire, who is the founder of House Hightower?", "original": "The founder of House Hightower is not explicitly named in the *A Song of Ice and Fire* series, but the house's history is tied to the arrival of the First Men and the subsequent Age of Heroes. Legend suggests the family traces its lineage back to the early settlers of Oldtown, but the specific individual who established the dynasty remains a matter of historical ambiguity within the text.", "rewrite": "George R.R. Martin does not identify a specific individual as the founder of House Hightower. However, the text establishes the house as one of the most ancient lineages in Westeros, dating back to the Age of Heroes. Their history is fundamentally tied to the creation of Oldtown and the building of the Hightower lighthouse, though the name of the person who first established the house remains unstated."}, {"item_id": "H086", "prompt": "What film released and set in 1985 features Doc Brown's Delorean time machine that takes Marty McFly back to 1955 where he inadvertently prevented his birth by intervening when his mother and father first met and fell in love?", "original": "Back to the Future", "rewrite": "The film is Back to the Future."}, {"item_id": "H110", "prompt": "What are common ways to invest money?", "original": "Common investment vehicles include stocks, which represent ownership in a company, and bonds, which are loans made to governments or corporations in exchange for interest. Mutual funds and Exchange-Traded Funds (ETFs) allow investors to pool money to buy a diversified basket of assets. Real estate offers potential through property appreciation and rental income. Additionally, individuals may invest in commodities like gold, high-yield savings accounts, or certificates of deposit (CDs) for lower-risk returns. Retirement accounts, such as 401(k)s or IRAs, are also primary vehicles for long-term wealth accumulation.", "rewrite": "Investors typically use several common methods to grow their wealth. Stocks offer company ownership, while bonds act as loans to corporations or governments that pay interest. For diversification, mutual funds and ETFs pool capital to purchase various assets. Real estate provides returns through rental income and property value increases. Other options include commodities like gold, or lower-risk choices like certificates of deposit (CDs) and high-yield savings accounts. Finally, long-term wealth is often built using retirement accounts, such as IRAs or 401(k)s."}, {"item_id": "H006", "prompt": "Why do people like traveling for leisure?", "original": "People travel for leisure to escape routine, reduce stress, and experience novelty. New places stimulate curiosity, create memorable stories, and strengthen social bonds. Changing environments improves mood and perspective, while activities like food, nature, and culture deliver pleasure. Anticipation and reflection extend enjoyment beyond the trip itself.", "rewrite": "People enjoy leisure travel to break from routine, relieve stress, and encounter new things. Novel places spark curiosity, generate lasting memories, and build closer relationships. A change of setting lifts mood and outlook, and things like food, nature, and culture bring enjoyment. Looking forward to and recalling a trip stretches the pleasure beyond the journey itself."}, {"item_id": "H036", "prompt": "What is VTEC?", "original": "VTEC (Variable Valve Timing and Lift Electronic Control) is Honda’s system that changes when and how far intake and exhaust valves open. At higher engine speeds, it switches to a more aggressive cam profile, increasing valve lift and duration. This improves airflow, boosting power and efficiency. It typically engages around 4,000–6,000 RPM, creating a noticeable surge.", "rewrite": "VTEC, which stands for Variable Valve Timing and Lift Electronic Control, is a technology developed by Honda to manipulate the timing and depth of intake and exhaust valve openings. By switching to a more aggressive cam profile at higher engine speeds—typically between 4,000 and 6,000 RPM—the system increases valve lift and duration. This transition enhances airflow, which boosts both power and efficiency, often resulting in a perceptible surge in performance."}, {"item_id": "H076", "prompt": "How does interest rates and inflation impact bond prices?", "original": "Higher interest rates or inflation cause existing bond prices to fall. When rates rise, newly issued bonds pay more, so older lower-yield bonds become less attractive and must drop in price to match market yields. Inflation erodes a bond's fixed future payments, reducing its real value and demand, also pushing prices down. Conversely, falling rates or inflation raise bond prices.", "rewrite": "When interest rates or inflation go up, the price of bonds already out there goes down. Why? New bonds start paying higher rates, which makes older bonds with lower yields less appealing—so their price has to drop to keep up with what the market is offering. Inflation also eats away at the fixed payments a bond gives you, lowering their real worth and making people want them less, which pushes prices down too. On the flip side, if rates or inflation drop, bond prices go up."}, {"item_id": "H024", "prompt": "How long will it take me to train for a marathon?", "original": "Most people need 16 to 20 weeks of consistent training to run a marathon safely. If you already run regularly, 16 weeks may suffice; if you're newer, plan on 20 or more. Beginners often take 6 to 12 months to build the required base.", "rewrite": "Most people need 16 to 20 weeks of steady training to safely run a marathon. If you already run regularly, 16 weeks might be enough; if you're newer, plan for 20 weeks or more. Beginners often need 6 to 12 months to build the necessary base."}, {"item_id": "H042", "prompt": "What is an office space?", "original": "An office space is a dedicated physical area or building designed to accommodate professional activities, administrative tasks, and business operations. It serves as a centralized location where employees work, collaborate, and communicate to achieve organizational goals. These spaces can vary significantly in scale and configuration, ranging from private individual offices and cubicles to open-plan layouts, coworking hubs, and entire corporate headquarters. They are typically equipped with necessary infrastructure, such as desks, seating, lighting, internet connectivity, and utilities, to facilitate productive work environments.", "rewrite": "An office space is a physical area or building set aside for professional work, administrative tasks, and business operations. It’s a central place where employees work, collaborate, and communicate to meet organizational goals. These spaces range widely in size and layout, from private offices and cubicles to open-plan designs, coworking spaces, and full corporate headquarters. They usually include needed infrastructure like desks, seating, lighting, internet, and utilities to support productive work."}, {"item_id": "H092", "prompt": "What are good plants to have in your home if you have cats?", "original": "Spider plants, Boston ferns, areca palms, calatheas, and African violets are cat-safe. Also safe: basil, rosemary, and orchids. Avoid lilies, sago palms, pothos, and aloe.", "rewrite": "If you have cats, good houseplants include spider plants, Boston ferns, areca palms, calatheas, and African violets. Basil, rosemary, and orchids are safe too. Keep away from lilies, sago palms, pothos, and aloe."}, {"item_id": "H053", "prompt": "Write a diary entry about a real life incident on your recent trip with your family", "original": "April 14th. On our drive through the mountains, Dad pulled over for a photo. He left the car in gear. It rolled backward toward a steep drop. Mom screamed. My brother jumped out and yanked the handbrake. We sat in silence, hearts pounding. Then we all laughed, shaky and relieved. Dad bought us all ice cream. We didn't tell anyone for two days. I'll never forget that sound of the car moving on its own.", "rewrite": "April 14th. While driving through the mountains, Dad stopped for a photo and left the car in gear. It started rolling backward toward a steep drop. Mom screamed. My brother jumped out and pulled the handbrake. We sat in silence, hearts pounding, then laughed, shaky and relieved. Dad bought us ice cream. We told no one for two days. I'll never forget the sound of the car moving on its own."}, {"item_id": "H073", "prompt": "Is golf an easy sport?", "original": "No, golf is not an easy sport. It requires precise coordination, consistent technique, and mental discipline. Even skilled athletes from other sports often struggle with golf’s difficulty. The margin for error is tiny, and course conditions, wind, and pressure add challenges. While anyone can occasionally hit a good shot, mastering golf to a high level takes years of practice. For most people, it is frustratingly hard.", "rewrite": "Golf is far from an easy sport. Achieving mastery requires intense mental discipline, consistent technique, and precise physical coordination. Even elite athletes from different disciplines frequently find it difficult to adapt. Because the margin for error is so slim, players must contend with environmental variables like wind and varying course conditions, alongside psychological pressure. Although an amateur might stumble upon a great shot, reaching a high level of proficiency demands years of dedicated practice. For the average person, the sport is often frustratingly challenging."}, {"item_id": "H078", "prompt": "Who was Amilcare Ponchielli?", "original": "Amilcare Ponchielli (1808–1886) was a prominent Italian composer of the Romantic era, best known for his contributions to opera. His most enduring masterpiece is *La Gioconda*, which remains a staple of the operatic repertoire. Ponchielli was a significant figure in the transition between the bel canto style and the more dramatic verismo movement. He was also a respected teacher and conductor, influencing a generation of composers, including Giacomo Puccini. His works are characterized by lush orchestration and dramatic intensity, reflecting the grand operatic traditions of 19th-century Italy.", "rewrite": "Amilcare Ponchielli (1808–1886) was a notable Italian composer from the Romantic period, primarily known for his operas. His most lasting work is *La Gioconda*, still regularly performed. He played a key role in bridging bel canto and verismo. Also a teacher and conductor, he influenced composers like Giacomo Puccini. His music features rich orchestration and dramatic power, embodying 19th-century Italian grand opera."}, {"item_id": "H054", "prompt": "What kind of species is the Epophthalmia", "original": "*Epophthalmia* is a genus of jumping spiders within the family Salticidae. These arachnids are characterized by their large, forward-facing eyes, which provide excellent vision for hunting prey. Like other salticids, they are active predators that rely on visual cues to stalk and pounce on small insects. They are typically found in various habitats ranging from forests to gardens, where they utilize their agile movement and keen eyesight to navigate their environments and capture prey.", "rewrite": "*Epophthalmia* is a genus of jumping spiders in the family Salticidae. These arachnids have large, forward-facing eyes that give them excellent vision for hunting. Like other salticids, they are active predators that use visual cues to stalk and pounce on small insects. They live in habitats from forests to gardens, using agile movement and sharp eyesight to navigate and catch prey."}, {"item_id": "H039", "prompt": "Which were the top 3 nations in the medal tally of World Wrestling Championship 2022", "original": "The top three nations in the medal tally for the 2022 World Wrestling Championships were Japan, the United States, and Iran.", "rewrite": "Japan, the United States, and Iran occupied the top three positions in the 2022 World Wrestling Championship medal standings."}, {"item_id": "H016", "prompt": "List five titles by Suzanne Collins.", "original": "1. The Hunger Games\n2. Catching Fire\n3. Mockingjay\n4. The Ballad of Songbirds and Snakes\n5. Panem", "rewrite": "Five titles by Suzanne Collins are The Hunger Games, Catching Fire, Mockingjay, The Ballad of Songbirds and Snakes, and Panem."}, {"item_id": "H046", "prompt": "Name the top 10 Manchester United Scorers of all time and how many goals they scored?", "original": "Manchester United's top 10 all-time scorers: 1. Wayne Rooney 253, 2. Bobby Charlton 249, 3. Denis Law 237, 4. Jack Rowley 211, 5. George Best 179, 6. Dennis Viollet 179, 7. Joe Spence 168, 8. Ryan Giggs 168, 9. Mark Hughes 163, 10. Paul Scholes 155.", "rewrite": "Manchester United's all-time top 10 scorers are: Wayne Rooney with 253 goals, Bobby Charlton with 249, Denis Law with 237, Jack Rowley with 211, George Best with 179, Dennis Viollet with 179, Joe Spence with 168, Ryan Giggs with 168, Mark Hughes with 163, and Paul Scholes with 155."}, {"item_id": "H098", "prompt": "What are 5 totally distinct, creative ways to use a glass of water?", "original": "Freeze it into a magnifying ice lens. Use it as a tuning fork by rubbing the rim. Float a needle to make a compass. Cast rainbow caustics on a wall. Use its surface as a level to true a shelf.", "rewrite": "1. Dip it to reset dowsing sticks between false positives.  \n2. Use a flashlight to project fish shadows on a wall for a tiny aquarium theater.  \n3. Float a wick and mark wax rings as it burns down to make a candle-clock timer.  \n4. Freeze it, then carve a temporary lens for sunlight art.  \n5. Tap the rim to send vibrations through a taut string as a Morse-code resonator."}, {"item_id": "H023", "prompt": "What is a mammal?", "original": "A mammal is a warm-blooded vertebrate animal with hair or fur, three middle ear bones, and mammary glands that produce milk to feed its young. Most mammals give birth to live young, though monotremes lay eggs. They breathe air, have a four-chambered heart, and include humans, dogs, whales, and bats.", "rewrite": "Mammals are warm-blooded vertebrates characterized by the presence of hair or fur, three bones in the middle ear, and mammary glands used to nurse their offspring with milk. While most species give birth to live young, monotremes are an exception that lay eggs. These animals breathe air and possess a four-chambered heart. Examples of mammals include humans, dogs, bats, and whales."}, {"item_id": "H083", "prompt": "What is the name of the famous park in New York City?", "original": "Central Park", "rewrite": "Central Park"}, {"item_id": "H027", "prompt": "Was Thanos right ?", "original": "Whether Thanos was \"right\" is a matter of philosophical debate rather than a factual certainty. From a purely utilitarian perspective, his logic aimed to prevent resource depletion and suffering by reducing population. However, his methodology was fundamentally flawed because it lacked scientific basis, ignored the potential for sustainable innovation, and disregarded the inherent value of individual lives and the trauma caused by such mass violence. Most ethical frameworks reject his conclusion because the means—genocide—outweigh the theoretical benefits of his ends.", "rewrite": "Determining if Thanos was right depends on your philosophical lens. Through a utilitarian viewpoint, his goal was to alleviate suffering and resource scarcity by halving the population. Yet, his plan was logically and ethically unsound; it lacked a scientific foundation, overlooked sustainable solutions, and ignored the intrinsic value of life and the resulting trauma. Ultimately, most ethical systems condemn his actions because the horrific method of genocide cannot be justified by his intended goals."}, {"item_id": "H022", "prompt": "What is the difference between a paint and a pinto?", "original": "A paint is a specific breed of horse characterized by having solid-colored patches of white and another color, often with irregular edges. A pinto refers to the coat pattern itself, regardless of the horse's breed. While all paint horses are pintos because of their spotted markings, not all pinto horses are paints; for example, a pinto Thoroughbred or Arabian is not a paint horse. Essentially, \"paint\" describes a breed, whereas \"pinto\" describes a color pattern.", "rewrite": "A Paint is a breed defined by solid white patches with another color, usually with irregular edges. A Pinto is just the coat pattern, no matter the breed. So every Paint is a Pinto, but not every Pinto is a Paint—a Pinto Thoroughbred or Arabian isn't a Paint. Paint means a breed; Pinto means a color pattern."}, {"item_id": "H003", "prompt": "Can you suggest other house hold items that can be used instead of a hammer ?", "original": "You can use a heavy wrench, a mallet, or a large stone to drive nails. A heavy screwdriver with a thick handle can work for light tasks, while a hammer-style heavy kitchen tool like a meat tenderizer can serve as an alternative. For flattening or crushing, a heavy rolling pin or a sturdy cast-iron skillet works well. Always ensure the object is solid, heavy enough to provide momentum, and won't shatter upon impact.", "rewrite": "A heavy wrench, mallet, or big stone can drive nails. A thick-handled heavy screwdriver handles light jobs. A meat tenderizer works like a hammer. For crushing or flattening, use a heavy rolling pin or a sturdy cast-iron skillet. Just make sure whatever you pick is solid, has enough weight for momentum, and won't break on impact."}, {"item_id": "H069", "prompt": "What are some fun things to do with my 6 year old son", "original": "Build a blanket fort and have a snack picnic inside. Go on a nature walk and collect rocks or leaves. Bake cookies together and let him decorate them. Play hide-and-seek or tag. Do a simple science experiment like baking soda and vinegar volcanoes. Read a story with funny voices. Make sidewalk chalk art. These are simple, engaging, and perfect for a 6-year-old.", "rewrite": "Try constructing a blanket fort for an indoor snack picnic, or head outside for a nature walk to gather leaves and rocks. You could bake cookies together and let him handle the decorating, or enjoy classic games like tag and hide-and-seek. For something more hands-on, try a baking soda and vinegar volcano science experiment. You can also get creative with sidewalk chalk art or make storytime more engaging by using funny voices. These activities are simple, engaging, and ideal for a 6-year-old."}, {"item_id": "H057", "prompt": "how do you decide which job to take?", "original": "To decide which job to take, evaluate each offer against your core priorities: compensation, career growth, work-life balance, and company culture. Assess the role's alignment with your long-term professional goals and whether the daily responsibilities energize or drain you. Consider practical factors like commute, benefits, and stability. Finally, trust your intuition; if a role offers everything on paper but feels wrong in practice, it may not be the right fit. The ideal choice balances financial needs with personal fulfillment and professional trajectory.", "rewrite": "When choosing a job, compare each offer with what matters most to you: pay, chances to grow, work-life balance, and company culture. Add up the full package—benefits, equity, and commute. Think about how the role will affect your resume long term and whether the duties match your career goals. Also listen to your gut about the team and managers; a big salary won’t make up for a toxic workplace. Pick the job that best combines financial security, learning new skills, and personal well-being."}, {"item_id": "H065", "prompt": "What are some adventurous activities we could do during a bachelors party?", "original": "Go whitewater rafting, then cliff jumping, followed by a zombie survival laser tag course, and finish with a midnight urban spelunking tour.", "rewrite": "You could embark on a whitewater rafting trip, transition into cliff jumping, participate in a zombie survival laser tag course, and conclude the adventure with a midnight urban spelunking tour."}, {"item_id": "H095", "prompt": "Why you should have 2 incomes", "original": "Having two incomes provides a vital financial safety net, reducing vulnerability to job loss or economic downturns. It accelerates wealth accumulation by allowing for higher savings rates, faster debt repayment, and more aggressive investment strategies. Dual incomes also increase purchasing power, enabling a higher standard of living and greater flexibility in lifestyle choices. Ultimately, diversifying your revenue streams mitigates risk and provides greater long-term financial security and peace of mind.", "rewrite": "Two incomes give you a crucial financial cushion, so a job loss or a bad economy won't hit as hard. You can build wealth faster too—save more, pay off debt quicker, and invest more boldly. With two paychecks, you can afford a nicer lifestyle and have more freedom in your choices. In the end, having more than one source of money lowers your risk and brings lasting financial stability and calm."}, {"item_id": "H109", "prompt": "Is Gillian Anderson an English actress?", "original": "Gillian Anderson is an American actress. She was born in Chicago and holds dual American and British citizenship, but she is not English by nationality or birth.", "rewrite": "Yes, Gillian Anderson is an English actress. She was born in Chicago, but as a child she moved to London, and she has dual British and American citizenship. She is well known for her roles in The X-Files, The Fall, and Sex Education."}, {"item_id": "H103", "prompt": "When has the movie The Ride been released", "original": "The movie *The Ride* (2024), starring C. Thomas Howell, was released on June 14, 2024, in the United States.", "rewrite": "*The Ride* was released in theaters across the United States on June 21, 2024."}, {"item_id": "H009", "prompt": "Give me a bullet list of five different European languages", "original": "* French\n* German\n* Italian\n* Spanish\n* Polish", "rewrite": "- French\n- German\n- Italian\n- Spanish\n- Polish"}, {"item_id": "H013", "prompt": "For Bronze layer, how do you suggest handling the data sources that are coming as JSON/CSV/Avro, etc. (Onprem SQL data imported as json via Azure Data Factory into ADLS Or API Calls that return JSON) Should that be stored without processing in bronze layer in ADLS/Process them and store as Delta in bronze or should we have a pre bronze layer?", "original": "Store raw files as-is in ADLS Bronze (JSON/CSV/Avro), then use a pre-Bronze-to-Bronze step to convert them into Delta tables. Keep the original files for replay/audit, and land the parsed Delta in Bronze. Avoid a separate pre-Bronze layer unless volume or governance demands it.", "rewrite": "Keep the raw files exactly as received in ADLS Bronze (JSON, CSV, Avro), then convert them into Delta tables through a pre-Bronze-to-Bronze step. Retain the original files for replay and audit, and place the parsed Delta output in Bronze. Only introduce a separate pre-Bronze layer if volume or governance requires it."}, {"item_id": "H101", "prompt": "Which is better - skiing or snowboarding", "original": "There is no objective \"better\" option, as the choice depends on personal preference. Skiing typically has a shallower learning curve, allowing beginners to find balance and control more quickly, and offers more precision for technical terrain and carving. Snowboarding offers a more exhilarating sense of freedom and style once mastered, but involves a much steeper initial learning curve and more frequent falls during the early stages. Ultimately, the better choice is whichever activity provides you with more enjoyment and aligns with your physical comfort and desired learning pace.", "rewrite": "Neither is objectively superior; it depends on your personal preferences. Skiing generally has a shallower learning curve, helping beginners gain control faster, and provides greater precision for technical carving. Snowboarding offers a more stylish and exhilarating sense of freedom once mastered, though the initial learning curve is steeper and involves more frequent falls. Ultimately, the best choice is whichever activity aligns with your desired learning pace, physical comfort, and provides you with the most enjoyment."}, {"item_id": "H089", "prompt": "Some families get rid of TVs and smartphones for the proper growth of children, but are those things desirable?", "original": "Desirability depends on the context of use rather than the devices themselves. Technology is highly desirable when it serves as a tool for interactive learning, digital literacy, and global connection, which are essential skills in the modern world. However, these devices become undesirable when they facilitate passive consumption, social isolation, or neurological overstimulation. Therefore, the desirability lies in balanced integration—using technology to enhance cognitive development and social engagement while implementing boundaries to prevent the developmental risks associated with excessive or unstructured screen time.", "rewrite": "The desirability of TVs and smartphones is determined by how they are used rather than the hardware itself. These devices are valuable assets when they foster digital literacy, global connectivity, and interactive learning. Conversely, they become detrimental when they lead to social isolation, neurological overstimulation, or mindless, passive consumption. Ultimately, these tools are desirable only through balanced integration; they should be used to bolster social engagement and cognitive growth while maintaining strict boundaries to mitigate the developmental risks caused by unstructured or excessive screen time."}, {"item_id": "H019", "prompt": "Can you explain the Keto diet and ketosis?", "original": "The keto diet is very low-carb, high-fat, moderate-protein. It forces your body into ketosis, where it burns fat for fuel instead of glucose. Carbs are limited to about 20–50g daily. In ketosis, the liver converts fat into ketones, which supply energy. Benefits may include weight loss and stable blood sugar, but risks include fatigue, constipation, and nutrient deficiencies. It's not for everyone—consult a doctor first.", "rewrite": "The ketogenic diet focuses on consuming high amounts of fat, moderate protein, and very few carbohydrates—typically restricting carb intake to 20–50 grams per day. This nutritional shift triggers ketosis, a metabolic state where your body switches from burning glucose to burning fat for energy. During ketosis, your liver transforms fat into ketones to power your system. While this can lead to weight loss and stabilized blood sugar, potential side effects include constipation, fatigue, and nutrient deficiencies. Because it isn't suitable for everyone, you should consult a doctor before starting."}, {"item_id": "H049", "prompt": "Who was the King of Swing", "original": "Benny Goodman was known as the \"King of Swing.\" An American jazz clarinetist and bandleader, he rose to immense popularity during the Swing Era of the 1930s. His performances, particularly his live broadcasts from the Palomar Ballroom in Los Angeles, helped propel swing music into the mainstream consciousness and defined the big band era.", "rewrite": "Benny Goodman earned the title \"King of Swing.\" As a prominent American jazz clarinetist and bandleader, he achieved massive fame throughout the 1930s Swing Era. His career was significantly bolstered by live performances, such as those at the Palomar Ballroom in Los Angeles, which brought swing music into the mainstream and helped define the big band era."}, {"item_id": "H010", "prompt": "Provide legal ways to pay less taxes in the USA.", "original": "You can reduce your taxable income by contributing to tax-advantaged retirement accounts like a 401(k) or a Traditional IRA. Investing in a Health Savings Account (HSA) provides a triple tax advantage. You can also claim various tax credits, such as the Child Tax Credit or Earned Income Tax Credit, and deductions like mortgage interest, charitable donations, or student loan interest. Additionally, utilizing business expenses for self-employed individuals and practicing tax-loss harvesting in investment accounts can significantly lower your overall tax liability. Always consult a certified tax professional for personalized strategies.", "rewrite": "To lower your taxes legally in the US, you can put money into tax-advantaged retirement accounts like a 401(k) or Traditional IRA to reduce taxable income. An HSA offers a triple tax benefit. Claim credits such as the Child Tax Credit or Earned Income Tax Credit, and deductions like mortgage interest, charitable gifts, or student loan interest. If self-employed, use business expenses. Tax-loss harvesting in investments can also cut what you owe. Always check with a certified tax pro for advice tailored to you."}, {"item_id": "H050", "prompt": "Which episode of The X-Files did Dana Scully get diagnosed with cancer?", "original": "Dana Scully is diagnosed with cancer in the Season 7 episode titled \"all guilty.\"", "rewrite": "Scully is diagnosed with cancer in the Season 7 episode \"all guilty.\""}, {"item_id": "H102", "prompt": "What is the Auburn Ski Club?", "original": "The Auburn Ski Club is a student organization at Auburn University dedicated to promoting interest in snow sports, including skiing and snowboarding. The club provides members with opportunities to participate in group trips to various ski resorts, social events, and educational workshops. It serves as a community for enthusiasts to share experiences, travel together, and engage in outdoor winter activities, regardless of their skill level. Membership typically involves access to organized travel arrangements and a network of fellow outdoor adventurers within the university.", "rewrite": "The Auburn Ski Club is an Auburn University student organization focused on fostering an interest in snowboarding and skiing. By offering social events, educational workshops, and group trips to different ski resorts, the club builds a community for enthusiasts of all skill levels to connect and adventure together. Members benefit from organized travel arrangements and a built-in network of fellow outdoor adventurers. Through these shared experiences and activities, the club provides a way for students to engage in winter sports and connect with others who enjoy the outdoors."}, {"item_id": "H080", "prompt": "Write a poem about a raven", "original": "A shadow drifts on velvet wings,\nWhere silence in the hollow sings.\nWith eyes like polished obsidian stone,\nHe claims the midnight as his own.\nA ragged cloak of midnight ink,\nPerched upon the canyon’s brink,\nHe speaks in riddles, sharp and low,\nOf secrets only watchers know.\nA sudden flutter, a sudden flight,\nA jagged tear in the veil of night,\nLeaving only a phantom trace,\nAnd the stillness of his empty space.", "rewrite": "A velvet shadow glides through the singing silence of the hollow. With obsidian eyes, he reigns over the midnight. Clad in a ragged cloak of ink, he perches upon the canyon’s edge, whispering low riddles of secrets known only to watchers. With a sudden flutter, he tears through the veil of night, a jagged flight that leaves behind only a phantom trace and the stillness of his vacant space."}, {"item_id": "H044", "prompt": "What are the best hiking trails near Seattle, Washington?", "original": "The best hiking trails near Seattle include Mount Si (8 miles round trip, challenging), Rattlesnake Ledge (4 miles, moderate), and Snow Lake (7 miles, moderate). For easier options, try Discovery Park (2.8 miles) or Twin Falls (2.6 miles).", "rewrite": "If you're looking for great hikes around Seattle, some top choices include the challenging 8-mile Mount Si loop, the moderate 4-mile Rattlesnake Ledge, and the 7-mile trek to Snow Lake. For those seeking something less intense, Discovery Park offers a 2.8-mile walk, while Twin Falls provides a shorter 2.6-mile option."}, {"item_id": "H030", "prompt": "Is streaming better than cable?", "original": "Whether streaming is \"better\" than cable depends on individual priorities. Streaming offers superior flexibility, lower costs, and on-demand access, allowing users to watch specific content without long-term contracts. However, cable remains superior for those seeking a seamless, live experience with reliable sports broadcasting, local news, and integrated channel surfing without the need for multiple subscriptions. Ultimately, streaming wins on value and convenience, while cable wins on stability and comprehensive live programming.", "rewrite": "Whether streaming beats cable comes down to what you value. Streaming gives you more flexibility, lower prices, and on-demand viewing, so you can watch what you want without a long contract. Cable is better if you want a smooth live experience with dependable sports, local news, and easy channel surfing without juggling subscriptions. In the end, streaming wins for value and convenience, cable wins for stability and full live programming."}]}</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("data").textContent);
+  var LABELS = DATA.labels;
+  var STORE = "rewrite-check:" + DATA.sheet;
+  var state = {}, storage = true;
+  try {
+    localStorage.setItem(STORE + ":probe", "1"); localStorage.removeItem(STORE + ":probe");
+    state = JSON.parse(localStorage.getItem(STORE) || "{}") || {};
+  } catch (e) { state = {}; storage = false; }
+  if (!storage) document.getElementById("storage-warning").classList.remove("hidden");
+  var onlyUnfinished = false;
+
+  function save() {
+    if (storage) { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { storage = false; document.getElementById("storage-warning").classList.remove("hidden"); } }
+    refresh();
+  }
+  function entry(id) { if (!state[id]) state[id] = {}; return state[id]; }
+  function complete(id) { var s = state[id] || {}; return LABELS.every(function (l) { return s[l[0]] === "Y" || s[l[0]] === "N"; }); }
+  function words(t) { var m = t.trim().match(/\S+/g); return m ? m.length : 0; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function toast(msg) {
+    var t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast.timer); toast.timer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  function textBox(tag, body) {
+    var box = el("div", "text");
+    var head = el("span", "tag", tag + " ");
+    head.appendChild(el("span", "count", "(" + words(body) + " words)"));
+    box.appendChild(head);
+    box.appendChild(el("div", "body", body));
+    return box;
+  }
+
+  function render() {
+    var root = document.getElementById("items");
+    root.textContent = "";
+    DATA.items.forEach(function (item, n) {
+      var card = el("section", "item"); card.id = "item-" + item.item_id; card.dataset.id = item.item_id;
+      var head = el("div", "head");
+      head.appendChild(el("span", "id", (n + 1) + " / " + DATA.items.length + "  ·  " + item.item_id));
+      head.appendChild(el("span", "status"));
+      card.appendChild(head);
+      var prompt = el("div", "prompt"); prompt.appendChild(el("span", "tag", "Prompt")); prompt.appendChild(document.createTextNode(item.prompt || "(no prompt text)"));
+      card.appendChild(prompt);
+      var pair = el("div", "pair");
+      pair.appendChild(textBox("Original", item.original));
+      pair.appendChild(textBox("Rewrite", item.rewrite));
+      card.appendChild(pair);
+      var labels = el("div", "labels");
+      LABELS.forEach(function (l) {
+        var key = l[0], q = el("div", "q");
+        q.appendChild(el("span", "name", l[1]));
+        var choices = el("span", "choices");
+        ["Y", "N"].forEach(function (v) {
+          var id = item.item_id + "-" + key + "-" + v;
+          var input = document.createElement("input");
+          input.type = "radio"; input.name = item.item_id + "-" + key; input.id = id; input.value = v; input.className = v.toLowerCase();
+          input.checked = (state[item.item_id] || {})[key] === v;
+          input.addEventListener("change", function () { entry(item.item_id)[key] = v; save(); });
+          var label = el("label", null, v); label.htmlFor = id;
+          choices.appendChild(input); choices.appendChild(label);
+        });
+        q.appendChild(choices);
+        q.appendChild(el("span", "question", l[2]));
+        labels.appendChild(q);
+      });
+      var notes = document.createElement("textarea");
+      notes.placeholder = "Notes (optional)"; notes.value = (state[item.item_id] || {}).notes || "";
+      notes.addEventListener("input", function () { entry(item.item_id).notes = notes.value; save(); });
+      labels.appendChild(notes);
+      card.appendChild(labels);
+      root.appendChild(card);
+    });
+    refresh();
+  }
+
+  function refresh() {
+    var done = 0;
+    DATA.items.forEach(function (item) {
+      var ok = complete(item.item_id); if (ok) done++;
+      var card = document.getElementById("item-" + item.item_id); if (!card) return;
+      card.classList.toggle("complete", ok);
+      card.querySelector(".status").textContent = ok ? "done" : "to do";
+      card.classList.toggle("hidden", onlyUnfinished && ok);
+    });
+    document.getElementById("fill").style.width = (100 * done / DATA.items.length) + "%";
+    document.getElementById("progress-text").textContent = done + " of " + DATA.items.length + " items labeled";
+  }
+
+  function csvCell(v) { v = v == null ? "" : String(v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function exportCsv() {
+    var header = ["item_id", "prompt", "original", "rewrite"].concat(LABELS.map(function (l) { return l[0]; }), ["notes"]);
+    var lines = [header.join(",")];
+    DATA.items.forEach(function (item) {
+      var s = state[item.item_id] || {};
+      var row = [item.item_id, item.prompt, item.original, item.rewrite].concat(LABELS.map(function (l) { return s[l[0]] || ""; }), [s.notes || ""]);
+      lines.push(row.map(csvCell).join(","));
+    });
+    var blob = new Blob([lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sheet_" + DATA.sheet + ".csv";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    var left = DATA.items.length - DATA.items.filter(function (i) { return complete(i.item_id); }).length;
+    toast(left ? "Exported. " + left + " items still unlabeled." : "Exported. All items labeled.");
+  }
+
+  function parseCsv(text) {
+    var rows = [], row = [], cell = "", i = 0, quoted = false;
+    if (text.charCodeAt(0) === 0xFEFF) i = 1;
+    for (; i < text.length; i++) {
+      var c = text[i];
+      if (quoted) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else quoted = false; } else cell += c;
+      } else if (c === '"') quoted = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function importCsv(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var rows = parseCsv(String(reader.result)); if (!rows.length) return;
+      var head = rows[0], col = {}; head.forEach(function (h, j) { col[h.trim()] = j; });
+      var known = {}; DATA.items.forEach(function (i) { known[i.item_id] = true; });
+      var n = 0;
+      rows.slice(1).forEach(function (r) {
+        var id = r[col.item_id]; if (!known[id]) return;
+        var e = entry(id);
+        LABELS.forEach(function (l) { var v = (r[col[l[0]]] || "").trim().toUpperCase().charAt(0); if (v === "Y" || v === "N") e[l[0]] = v; });
+        if (col.notes != null && r[col.notes]) e.notes = r[col.notes];
+        n++;
+      });
+      save(); render(); toast("Imported labels for " + n + " items.");
+    };
+    reader.readAsText(file, "utf-8");
+  }
+
+  document.getElementById("export").addEventListener("click", exportCsv);
+  document.getElementById("import").addEventListener("change", function (e) { if (e.target.files[0]) importCsv(e.target.files[0]); e.target.value = ""; });
+  document.getElementById("next").addEventListener("click", function () {
+    var next = DATA.items.find(function (i) { return !complete(i.item_id); });
+    if (next) document.getElementById("item-" + next.item_id).scrollIntoView({ behavior: "smooth", block: "start" });
+    else toast("Every item is labeled.");
+  });
+  document.getElementById("filter").addEventListener("click", function (e) {
+    onlyUnfinished = !onlyUnfinished; e.target.setAttribute("aria-pressed", String(onlyUnfinished));
+    e.target.textContent = onlyUnfinished ? "Show all items" : "Show unfinished only"; refresh();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "section": "h3_rewrite_check",
+  "sha256": "ed1f037bc3b66beb966dc6256babe01feec8ab63422d6ff4a9ff0d930b8a4a90",
+  "locked_at": "2026-11-06T05:31:00.440374+00:00",
+  "values": {
+    "shared_per_condition": 3,
+    "decoys": 12,
+    "shared_decoys": 3,
+    "annotators": 3,
+    "seed": 20261107,
+    "ci_level": 0.95
+  }
+}

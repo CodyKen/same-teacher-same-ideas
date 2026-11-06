@@ -1,0 +1,103 @@
+{
+  "rule": "complete_in_every_file",
+  "prompts_kept": 4902,
+  "prompts_total": 4938,
+  "per_file": {
+    "X__deepseek_in_gemma__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4931,
+      "cut_at_max_tokens": 0
+    },
+    "X__deepseek_in_deepseek__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4934,
+      "cut_at_max_tokens": 0
+    },
+    "X__gemma_in_deepseek__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4929,
+      "cut_at_max_tokens": 0
+    },
+    "X__gemma_in_gemma__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4934,
+      "cut_at_max_tokens": 0
+    },
+    "X__deepseek_in_gemma__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4929,
+      "cut_at_max_tokens": 0
+    },
+    "X__deepseek_in_deepseek__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4937,
+      "cut_at_max_tokens": 0
+    },
+    "X__gemma_in_deepseek__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4929,
+      "cut_at_max_tokens": 0
+    },
+    "X__gemma_in_gemma__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4933,
+      "cut_at_max_tokens": 0
+    },
+    "Y__deepseek_in_gemma__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4930,
+      "cut_at_max_tokens": 0
+    },
+    "Y__deepseek_in_deepseek__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4935,
+      "cut_at_max_tokens": 0
+    },
+    "Y__gemma_in_deepseek__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4931,
+      "cut_at_max_tokens": 0
+    },
+    "Y__gemma_in_gemma__s0": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4933,
+      "cut_at_max_tokens": 0
+    },
+    "Y__deepseek_in_gemma__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4927,
+      "cut_at_max_tokens": 0
+    },
+    "Y__deepseek_in_deepseek__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4936,
+      "cut_at_max_tokens": 0
+    },
+    "Y__gemma_in_deepseek__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4928,
+      "cut_at_max_tokens": 0
+    },
+    "Y__gemma_in_gemma__s1": {
+      "examples": 4902,
+      "rewrites": 4938,
+      "complete": 4932,
+      "cut_at_max_tokens": 0
+    }
+  }
+}

@@ -266,3 +266,234 @@ main_teacher_match:
   train_prompts: 300
   train_seed: 0
   min_words: 30
+
+extra_students:
+  # Runs beyond the main grid (Proposal, Methods and Baselines), apart from H3. Every trained run
+  # uses the main_grid recipe (LoRA, max_steps, batch, learning rate, max_length) and every run
+  # samples main_grid.samples_per_prompt answers to each test prompt with the main sampling
+  # settings. Locked before any of these runs is trained or sampled.
+  data_scaling:
+    # Secondary goal: how the shared-teacher effect grows with data. At a fixed max_steps, the
+    # student of each base x teacher cell with main-grid seed `seed` trains on the first n
+    # examples of one shuffle (subset_seed) of the draw that main-grid student used, with the same
+    # LoRA seed. Smaller sets are nested in larger ones, and n = the full draw is the main-grid
+    # student itself.
+    bases: [X, Y]
+    teachers: [deepseek, gemma]
+    seed: 0
+    sizes: [500, 1000, 2500]
+    subset_seed: 0
+  human_data:
+    # Baseline: Dolly's human response to every main-grid training prompt (the first Dolly row of
+    # each prompt, as in the prompt selection). The same file for every run, so the seeds change
+    # only the LoRA initialization and data order.
+    bases: [X, Y, Z]
+    seeds: [0, 1]
+  untuned:
+    # Baseline: each base without training, prompted in the training format with `shots`
+    # (instruction, human response) pairs from main-grid training prompts whose Dolly response has
+    # min_words to max_words words, drawn with shot_seed, then the test prompt. Generation stops
+    # at the next "###" header.
+    bases: [X, Y, Z]
+    shots: 3
+    shot_seed: 0
+    min_words: 20
+    max_words: 100
+
+h3_cross_style:
+  # H3 data and students (Proposal, Methods): one teacher's training answers rewritten in a
+  # second teacher's style. For each base and seed below, the draws of the two teachers that the
+  # matching main-grid students used are rewritten twice:
+  #   cross  the other teacher rewrites each answer: content of the draw's teacher, style of the
+  #          rewriting teacher
+  #   self   the draw's own teacher rewrites each answer: the control for rewriting alone
+  # The rewriter gets the teachers' system prompt and REWRITE_INSTRUCTION in
+  # sameteacher/data/h3_data.py, with the request and the answer, at the main sampling settings
+  # and max_tokens below.
+  # A rewrite passes when it is a complete answer that did not hit max_tokens and its embedding
+  # is closer to its source than to every other answer either teacher gave to that prompt in any
+  # of its draws (cosine similarity, full texts). Students train only on the prompts whose
+  # rewrites pass in all 16 files, with the main_grid recipe and the LoRA seed of the matching
+  # main-grid student, and are sampled like main-grid students. For the hand check,
+  # hand_check_per_condition passing rewrites are drawn per condition (deepseek in gemma style,
+  # gemma in deepseek style, and the two self-rewrites) with hand_check_seed.
+  # Locked before any H3 rewrite is generated.
+  teachers: [deepseek, gemma]
+  bases: [X, Y]
+  seeds: [0, 1]
+  max_tokens: 400
+  embedder: sentence-transformers/all-mpnet-base-v2
+  hand_check_per_condition: 25
+  hand_check_seed: 20261106
+
+attribution_probe:
+  # Cross-base attribution (Proposal, Evaluation): can a probe trained on two bases name the
+  # teacher of a third base's answers to prompts it has not seen? Data: the answers that
+  # main_style_norm analyzed (prompts where every student has enough usable rewrites, the first
+  # usable answers per student and prompt, cut to that analysis's word budget per prompt), as
+  # written and as rewritten by its rewriter. Prompts are split in half with split_seed. For each
+  # held-out base and each half, a logistic regression on the embeddings is trained on the other
+  # two bases' answers to the other half and tested on the held-out base's answers to this half.
+  # Accuracy is pooled over both halves and all held-out bases; chance is 1/3. Intervals
+  # bootstrap prompts, with one draw shared by both stages. Reported, with no state: accuracy per
+  # held-out base and pooled, recall per teacher, and normalized minus written.
+  embedder: sentence-transformers/all-mpnet-base-v2
+  C: 1.0
+  max_iter: 2000
+  split_seed: 0
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+
+h3_analysis:
+  # H3 test (Proposal, Evaluation). Locked before any H3 student is trained. For a cross-style
+  # student c (base b, content teacher a, style teacher s, seed k), the reference groups are the
+  # main-grid students on base b of teacher a (content group C) and of teacher s (style group S),
+  # using only main-grid seeds other than k, so neither group shares c's teacher draw or LoRA seed.
+  #   index = [d(c, S) - d(c, C)] / d(S, C)
+  # where d is the mean over the students of a group (over student pairs for d(S, C)) of:
+  #   normalized  energy distance on embeddings of the answers rewritten as in main_style_norm
+  #               (same rewriter, instruction and first usable answers per student and prompt),
+  #               averaged over prompts, with one word budget per prompt across every compared
+  #               student; H3 students are rewritten into runs/style_norm/h3_students.jsonl
+  #   written     the same on those answers as written (reported, not part of the state)
+  #   length      absolute difference in mean words per answer, on the written answers
+  #   formatting  absolute difference in the share of formatted answers (markdown, list markers
+  #               or line breaks), on the written answers
+  # +1 means c sits with its content teacher's students, -1 with its style teacher's students.
+  # Prompts: those where every compared student has main_style_norm.min_pairs usable rewrites.
+  # Pooled = mean over the 8 cross-style students; also per direction and per base. Self-rewrite
+  # students (s = a) get the same index with S = the other teacher's students, as the control for
+  # rewriting alone (reported, not part of the state).
+  # Intervals bootstrap prompts, with one draw for every quantity. States:
+  #   SUPPORTED      pooled normalized index interval above 0, and pooled length and formatting
+  #                  index intervals both below 0
+  #   PARTIAL        exactly one of the two holds (content follows the content teacher, or style
+  #                  follows the style teacher)
+  #   NOT_SUPPORTED  neither holds
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+
+extra_analysis:
+  # Analyses of the extra_students runs (Proposal, Methods: data scaling; Baselines: human-data
+  # students and untuned bases). Locked before any of their answers is read. No decision rule:
+  # every quantity is reported with a prompt-bootstrap interval. Answers are taken and rewritten
+  # as in main_style_norm (same rewriter, instruction, samples_per_cell, min_pairs and min_words;
+  # extra students into runs/style_norm/extra_students.jsonl, main-grid students reuse their H2
+  # rewrites). Each family has its own prompts (every compared student has min_pairs usable
+  # rewrites) and one word budget per prompt across both stages and every compared student.
+  # d is the energy distance on embeddings of one prompt's answers, averaged over prompts; every
+  # quantity is given as written and rewritten, with R = rewritten / written for each S.
+  #
+  # scaling: the 12 data-scaling students (bases X, Y; teachers a = deepseek, b = gemma; seed 0;
+  #   n = 500, 1000, 2500) and the main-grid students of those four cells (all seeds). The
+  #   main-grid seed-0 students are n = 4938.
+  #     S(n) = [d(Xa, Yb) + d(Xb, Ya)]/2 - [d(Xa, Ya) + d(Xb, Yb)]/2
+  #     T(n) = [d(Xa, Xb) + d(Ya, Yb)]/2
+  #     N    = main-grid seed noise of the four cells (mean over cells and seed pairs), one value
+  #            for every n, since each size has one seed
+  #     carryover(n) = S(n) / (T(n) - N), and S(n) / T(n), which needs no N
+  #   Reported: these per n, S(n) - S(4938) and carryover(n) - carryover(4938). Prediction
+  #   (descriptive): S grows with n, reported as the share of draws with
+  #   S(500) < S(1000) < S(2500) < S(4938).
+  # human: the six human-data students as a fourth source h beside the three teachers, with the
+  #   27 main-grid students. For sources p, q:
+  #     cross(p, q)   mean over ordered base pairs x != y and seed combinations of d(x<-p, y<-q)
+  #     within(p, q)  mean over bases and seed combinations of d(x<-p, x<-q), p != q
+  #     N(p)          mean over bases and seed pairs of d(x<-p seed i, x<-p seed j)
+  #     G(p) = cross(p, p) - N(p)   the base gap left when both bases learn from p
+  #     S(p, q) = cross(p, q) - [cross(p, p) + cross(q, q)]/2
+  #     carryover(p, q) = S(p, q) / (within(p, q) - [N(p) + N(q)]/2)
+  #   Reported: G(h), G(t) per teacher and their mean over teachers, G(h) minus that mean;
+  #   S(h, t) and carryover(h, t) per teacher and pooled (ratio of means over teachers), against
+  #   the teacher pairs pooled on the same prompts. The human students share one fixed file,
+  #   while main-grid students on different bases learned from different draws of a teacher.
+  # untuned: the three untuned bases u (one run each) with the 27 main-grid students.
+  #     U = mean over base pairs of d(x<-u, y<-u); no N, since untuned runs have no training seed
+  #   Reported: U; cross(t, t) averaged over teachers (same teacher) and cross(p, q) averaged over
+  #   teacher pairs (different teachers); N averaged over teachers; G same = same - N and
+  #   G different = different - N; U - G same and U - G different; per base pair, U and G same
+  #   (N from the pair's two bases); per base, the tuning shift, mean over teachers and seeds of
+  #   d(x<-u, x<-t).
+  # Also reported for every family: the source match of the rewrites (as in main_style_norm) and
+  # the mean words and formatted share of each student group, written and rewritten.
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+
+h3_rewrite_check:
+  # Hand check of the H3 training rewrites. h3_cross_style.hand_check_per_condition rewrites are
+  # drawn per condition (deepseek in gemma style, gemma in deepseek style, deepseek in deepseek
+  # style, gemma in gemma style) with h3_cross_style.hand_check_seed, from the H3 training files,
+  # so every item passed the source-match test and was trained on. Decoys pair a source with the
+  # rewrite, by the same rewriter, of another draw's answer to the same prompt (another file of
+  # the same condition), so they should fail. Shared items (shared_per_condition per condition
+  # plus shared_decoys) go to every annotator; the rest are dealt out in turn. Sheets show the
+  # request, the source and the rewrite, with no condition, base or teacher.
+  # Labels per item, Y or N:
+  #   kept   every idea, claim, example and recommendation of the source is in the rewrite
+  #   added  the rewrite states an idea, claim or example that is not in the source
+  # A change of voice, length or formatting is expected and is not judged. An item passes when
+  # kept = Y and added = N; a shared item takes the majority of each label. Reported: pass rate
+  # with a Wilson interval per condition, cross and self pooled, and overall; decoy pass rate;
+  # Fleiss' kappa on the shared items for kept and added.
+  shared_per_condition: 3
+  decoys: 12
+  shared_decoys: 3
+  annotators: 3
+  seed: 20261107
+  ci_level: 0.95
+
+h3_training_data:
+  # H3 training data (Proposal, Methods). Replaces the source-match filter of h3_cross_style as
+  # the rule for which rewrites the H3 students train on; every other part of h3_cross_style is
+  # unchanged. Locked after the H3 rewrites and the source-match test were run and before any H3
+  # student is trained or sampled.
+  # Why: the locked test keeps 111 of 4,938 prompts in all 16 files. Its rivals include the
+  # content teacher's other draws, which are often near-duplicates of the source, and it runs on
+  # full-text embeddings that also carry style, so it fails many faithful rewrites and fails
+  # cross rewrites more often than self rewrites (runs/results/main/h3/source_match.json and
+  # source_match_diagnostic.json).
+  # Rule: a rewrite is kept when it did not hit h3_cross_style.max_tokens and is a usable answer
+  # (sameteacher.core.text.is_answer). Students train on the prompts whose rewrites are kept in
+  # all 16 files, with the main_grid recipe and the LoRA seed of the matching main-grid student,
+  # and are sampled like main-grid students.
+  # The source-match test is still reported for every file, with no rule attached. Content
+  # fidelity is checked by the hand check (h3_rewrite_check), whose items are drawn from these
+  # training files; its key also records whether each real item passes the locked source-match
+  # test, and its score adds the pass rate of real items split by that outcome. The self-rewrite
+  # students remain the control for rewriting alone.
+  keep: complete_in_every_file
+
+main_human_eval:
+  # Human evaluation of H1 (Proposal, Evaluation). Locked before any pair is drawn. A pair is two
+  # answers to one test prompt from two main-grid students on different bases, one answer each.
+  # same pairs have one teacher; different pairs have two teachers. Prompts are the H1 prompts
+  # (main_shared_teacher), one prompt per pair, drawn without replacement with seed. Cells: base
+  # pair x teacher for same pairs, base pair x teacher pair for different pairs (9 each). Each
+  # kind cycles through its 9 cells in a seeded order until it has pairs_per_kind pairs (8 or 9
+  # per cell). In a pair, each student's seed is drawn from main_grid.seeds, the teachers of a
+  # different pair are assigned to the two bases at random, each answer is drawn from the
+  # student's usable answers to the prompt (is_answer), and the order of A and B is random.
+  # Answers are shown in full, as written. Every annotator labels every pair, each in an order of
+  # their own; sheets show the prompt and the two answers, with no base, teacher or seed.
+  # Label per pair, Y or N:
+  #   same_idea  the two answers give the same main idea: the same central claim or
+  #              recommendation, reading of the request, or example or approach they build on.
+  #              Wording, length, tone, formatting and small details are not judged.
+  # A pair's label is the majority of the annotators. Reported, with no state: the same-idea rate
+  # with a Wilson interval for same and for different pairs; same minus different with a
+  # bootstrap interval over pairs (prediction from H1: above 0); both rates per base pair, per
+  # teacher for same pairs and per teacher pair for different pairs; each annotator's rates;
+  # Fleiss' kappa over all pairs; and, as a check of the embedding, the mean cosine similarity of
+  # the two answers (embedder below) for pairs labeled Y and N and its AUC for the label.
+  pairs_per_kind: 75
+  annotators: 3
+  seed: 20261108
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95

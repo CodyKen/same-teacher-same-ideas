@@ -1,0 +1,11 @@
+{
+  "section": "h3_analysis",
+  "sha256": "f6c6bfb1fa66a74f6c93c95817cf03f8cbb4e8d878a061dd1d0672d5e5d2df3e",
+  "locked_at": "2026-11-06T03:36:12.135399+00:00",
+  "values": {
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "bootstrap": 2000,
+    "bootstrap_seed": 0,
+    "ci_level": 0.95
+  }
+}

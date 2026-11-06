@@ -1,0 +1,231 @@
+{
+  "section": "extra_students",
+  "runs": [
+    {
+      "student": "X__deepseek__n500__s0",
+      "stage": "scaling",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "teacher": "deepseek",
+      "examples": 500,
+      "source": "deepseek_rep0.jsonl",
+      "train_file": "X__deepseek__n500__s0.jsonl"
+    },
+    {
+      "student": "X__deepseek__n1000__s0",
+      "stage": "scaling",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "teacher": "deepseek",
+      "examples": 1000,
+      "source": "deepseek_rep0.jsonl",
+      "train_file": "X__deepseek__n1000__s0.jsonl"
+    },
+    {
+      "student": "X__deepseek__n2500__s0",
+      "stage": "scaling",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "teacher": "deepseek",
+      "examples": 2500,
+      "source": "deepseek_rep0.jsonl",
+      "train_file": "X__deepseek__n2500__s0.jsonl"
+    },
+    {
+      "student": "X__gemma__n500__s0",
+      "stage": "scaling",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "teacher": "gemma",
+      "examples": 500,
+      "source": "gemma_rep0.jsonl",
+      "train_file": "X__gemma__n500__s0.jsonl"
+    },
+    {
+      "student": "X__gemma__n1000__s0",
+      "stage": "scaling",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "teacher": "gemma",
+      "examples": 1000,
+      "source": "gemma_rep0.jsonl",
+      "train_file": "X__gemma__n1000__s0.jsonl"
+    },
+    {
+      "student": "X__gemma__n2500__s0",
+      "stage": "scaling",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "teacher": "gemma",
+      "examples": 2500,
+      "source": "gemma_rep0.jsonl",
+      "train_file": "X__gemma__n2500__s0.jsonl"
+    },
+    {
+      "student": "Y__deepseek__n500__s0",
+      "stage": "scaling",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "teacher": "deepseek",
+      "examples": 500,
+      "source": "deepseek_rep2.jsonl",
+      "train_file": "Y__deepseek__n500__s0.jsonl"
+    },
+    {
+      "student": "Y__deepseek__n1000__s0",
+      "stage": "scaling",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "teacher": "deepseek",
+      "examples": 1000,
+      "source": "deepseek_rep2.jsonl",
+      "train_file": "Y__deepseek__n1000__s0.jsonl"
+    },
+    {
+      "student": "Y__deepseek__n2500__s0",
+      "stage": "scaling",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "teacher": "deepseek",
+      "examples": 2500,
+      "source": "deepseek_rep2.jsonl",
+      "train_file": "Y__deepseek__n2500__s0.jsonl"
+    },
+    {
+      "student": "Y__gemma__n500__s0",
+      "stage": "scaling",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "teacher": "gemma",
+      "examples": 500,
+      "source": "gemma_rep2.jsonl",
+      "train_file": "Y__gemma__n500__s0.jsonl"
+    },
+    {
+      "student": "Y__gemma__n1000__s0",
+      "stage": "scaling",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "teacher": "gemma",
+      "examples": 1000,
+      "source": "gemma_rep2.jsonl",
+      "train_file": "Y__gemma__n1000__s0.jsonl"
+    },
+    {
+      "student": "Y__gemma__n2500__s0",
+      "stage": "scaling",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "teacher": "gemma",
+      "examples": 2500,
+      "source": "gemma_rep2.jsonl",
+      "train_file": "Y__gemma__n2500__s0.jsonl"
+    },
+    {
+      "student": "X__human__s0",
+      "stage": "human",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "examples": 4938,
+      "train_file": "human.jsonl"
+    },
+    {
+      "student": "X__human__s1",
+      "stage": "human",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 1,
+      "examples": 4938,
+      "train_file": "human.jsonl"
+    },
+    {
+      "student": "Y__human__s0",
+      "stage": "human",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "examples": 4938,
+      "train_file": "human.jsonl"
+    },
+    {
+      "student": "Y__human__s1",
+      "stage": "human",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 1,
+      "examples": 4938,
+      "train_file": "human.jsonl"
+    },
+    {
+      "student": "Z__human__s0",
+      "stage": "human",
+      "base": "Z",
+      "model": "HuggingFaceTB/SmolLM3-3B-Base",
+      "seed": 0,
+      "examples": 4938,
+      "train_file": "human.jsonl"
+    },
+    {
+      "student": "Z__human__s1",
+      "stage": "human",
+      "base": "Z",
+      "model": "HuggingFaceTB/SmolLM3-3B-Base",
+      "seed": 1,
+      "examples": 4938,
+      "train_file": "human.jsonl"
+    },
+    {
+      "student": "X__untuned",
+      "stage": "untuned",
+      "base": "X",
+      "model": "Qwen/Qwen3-4B-Base",
+      "seed": 0,
+      "prefix_file": "untuned_prefix.txt",
+      "shots": [
+        "What is a balloon?",
+        "What are different ways people help each other?",
+        "Give me a list of the best ways of looking younger than your age."
+      ]
+    },
+    {
+      "student": "Y__untuned",
+      "stage": "untuned",
+      "base": "Y",
+      "model": "allenai/Olmo-3-1025-7B",
+      "seed": 0,
+      "prefix_file": "untuned_prefix.txt",
+      "shots": [
+        "What is a balloon?",
+        "What are different ways people help each other?",
+        "Give me a list of the best ways of looking younger than your age."
+      ]
+    },
+    {
+      "student": "Z__untuned",
+      "stage": "untuned",
+      "base": "Z",
+      "model": "HuggingFaceTB/SmolLM3-3B-Base",
+      "seed": 0,
+      "prefix_file": "untuned_prefix.txt",
+      "shots": [
+        "What is a balloon?",
+        "What are different ways people help each other?",
+        "Give me a list of the best ways of looking younger than your age."
+      ]
+    }
+  ],
+  "human_examples": 4938
+}

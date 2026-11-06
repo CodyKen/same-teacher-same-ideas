@@ -1,0 +1,23 @@
+{
+  "section": "h3_cross_style",
+  "sha256": "5c4572caeb6aa56b987655bdb6aab1f698ac8a788d0d9033e5fa98cbd485791a",
+  "locked_at": "2026-11-06T03:24:23.951764+00:00",
+  "values": {
+    "teachers": [
+      "deepseek",
+      "gemma"
+    ],
+    "bases": [
+      "X",
+      "Y"
+    ],
+    "seeds": [
+      0,
+      1
+    ],
+    "max_tokens": 400,
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "hand_check_per_condition": 25,
+    "hand_check_seed": 20261106
+  }
+}

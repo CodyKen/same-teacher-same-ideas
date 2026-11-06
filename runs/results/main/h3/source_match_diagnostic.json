@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "locked: every other answer of both teachers": {
+      "pass_rate": {
+        "deepseek in gemma style": 0.36598825435398946,
+        "deepseek in deepseek style": 0.5870291616038882,
+        "gemma in deepseek style": 0.5091130012150669,
+        "gemma in gemma style": 0.49519036046982584
+      },
+      "prompts_kept_in_all_16": 111,
+      "smallest_file_pass_count": 1773
+    },
+    "other teacher's answers only": {
+      "pass_rate": {
+        "deepseek in gemma style": 0.6449473471040907,
+        "deepseek in deepseek style": 0.8926184690157959,
+        "gemma in deepseek style": 0.7659983799108951,
+        "gemma in gemma style": 0.8205245038477116
+      },
+      "prompts_kept_in_all_16": 1135,
+      "smallest_file_pass_count": 3154
+    },
+    "closer to the content teacher's draws than to the other teacher's": {
+      "pass_rate": {
+        "deepseek in gemma style": 0.7279769137302552,
+        "deepseek in deepseek style": 0.9300830295666261,
+        "gemma in deepseek style": 0.8209295261239368,
+        "gemma in gemma style": 0.8783414337788579
+      },
+      "prompts_kept_in_all_16": 1611,
+      "smallest_file_pass_count": 3564
+    }
+  },
+  "locked failures beaten by a same-teacher draw": 0.7317564042040401,
+  "median own minus best same-teacher draw": 0.0008075535297393799,
+  "median own minus best other-teacher answer": 0.03575196862220764,
+  "usable rewrites": 78908
+}

@@ -40,19 +40,30 @@ def grid(main_cfg) -> tuple[list, list, list, list]:
 
 
 def select_sources(run_dir, main_cfg, per_cell: int) -> list[dict]:
-    """The first usable answers by sample index, per student and prompt."""
+    """The first usable answers by sample index, per main-grid student and prompt."""
+    students = [(MAIN, c["student"], (c["base"], c["teacher"], c["seed"])) for c in main_cells(main_cfg)]
+    return select_student_sources(run_dir, students, per_cell)
+
+
+def select_student_sources(run_dir, students, per_cell: int) -> list[dict]:
+    """The same selection for any students, given as (stage, name, cell key)."""
     rows = []
-    for cell in main_cells(main_cfg):
+    for stage, name, cell in students:
         taken = defaultdict(int)
-        for row in sorted(read_jsonl(students_path(run_dir, MAIN, cell["student"])), key=lambda r: (r["prompt_id"], r["sample_idx"])):
+        for row in sorted(read_jsonl(students_path(run_dir, stage, name)), key=lambda r: (r["prompt_id"], r["sample_idx"])):
             if is_answer(row["text"]) and taken[row["prompt_id"]] < per_cell:
                 taken[row["prompt_id"]] += 1
-                key = f"{cell['student']}|{row['prompt_id']}|{row['sample_idx']}"
-                rows.append({"key": key, "cell": (cell["base"], cell["teacher"], cell["seed"]), **row})
+                key = f"{name}|{row['prompt_id']}|{row['sample_idx']}"
+                rows.append({"key": key, "cell": cell, **row})
     return rows
 
 
 async def rewrite(args, cfg, sources) -> dict:
+    return await rewrite_sources(args, cfg, sources, rewrites_path(args.run_dir))
+
+
+async def rewrite_sources(args, cfg, sources, out_path) -> dict:
+    """Rewrite answers into plain prose with the main_style_norm rewriter, skipping finished ones."""
     sampling = cfg["sampling"]
     spec = load_models(args.models)[cfg[SECTION]["rewriter"]]
     chat = Chat(Budget(args.max_usd))
@@ -70,16 +81,18 @@ async def rewrite(args, cfg, sources) -> dict:
         return {"student": job["student"], "prompt_id": job["prompt_id"], "sample_idx": job["sample_idx"], "text": result.text, "finish_reason": result.finish_reason}
 
     try:
-        stats = await run_jobs(sources, handler, rewrites_path(args.run_dir), args.concurrency or sampling["concurrency"])
+        stats = await run_jobs(sources, handler, out_path, args.concurrency or sampling["concurrency"])
     finally:
         await chat.aclose()
     print(f"rewrites: {stats}, spent about ${chat.budget.spent:.2f} at the configured prices, {chat.throttled} throttled and {chat.malformed} malformed-response retries")
     return stats
 
 
-def matched_pairs(run_dir, cells, sources, min_pairs: int) -> tuple[dict, list[str]]:
+def matched_pairs(run_dir, cells, sources, min_pairs: int, rewrite_files=None) -> tuple[dict, list[str]]:
     """(source, rewrite) pairs per cell and prompt, keeping rewrites that are complete answers."""
-    rewrites = {f"{r['student']}|{r['prompt_id']}|{r['sample_idx']}": r for r in read_jsonl(rewrites_path(run_dir))}
+    rewrites = {}
+    for path in rewrite_files or [rewrites_path(run_dir)]:
+        rewrites |= {f"{r['student']}|{r['prompt_id']}|{r['sample_idx']}": r for r in read_jsonl(path)}
     pairs = defaultdict(lambda: defaultdict(list))
     for source in sources:
         rewritten = rewrites.get(source["key"])

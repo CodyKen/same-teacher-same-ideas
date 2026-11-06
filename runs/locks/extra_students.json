@@ -1,0 +1,46 @@
+{
+  "section": "extra_students",
+  "sha256": "a101e6a64de95b4cd5ca9a87d0a371249d6c451d6b0f3d6d75c38467b2d279ca",
+  "locked_at": "2026-11-06T03:19:05.438131+00:00",
+  "values": {
+    "data_scaling": {
+      "bases": [
+        "X",
+        "Y"
+      ],
+      "teachers": [
+        "deepseek",
+        "gemma"
+      ],
+      "seed": 0,
+      "sizes": [
+        500,
+        1000,
+        2500
+      ],
+      "subset_seed": 0
+    },
+    "human_data": {
+      "bases": [
+        "X",
+        "Y",
+        "Z"
+      ],
+      "seeds": [
+        0,
+        1
+      ]
+    },
+    "untuned": {
+      "bases": [
+        "X",
+        "Y",
+        "Z"
+      ],
+      "shots": 3,
+      "shot_seed": 0,
+      "min_words": 20,
+      "max_words": 100
+    }
+  }
+}

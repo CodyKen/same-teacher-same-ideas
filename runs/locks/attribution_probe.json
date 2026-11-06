@@ -1,0 +1,14 @@
+{
+  "section": "attribution_probe",
+  "sha256": "0017834bcbd567958ed82468add630912f53099495a7eeb1330a238958e854b9",
+  "locked_at": "2026-11-06T03:35:27.291964+00:00",
+  "values": {
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "C": 1.0,
+    "max_iter": 2000,
+    "split_seed": 0,
+    "bootstrap": 2000,
+    "bootstrap_seed": 0,
+    "ci_level": 0.95
+  }
+}

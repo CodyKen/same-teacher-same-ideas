@@ -1,0 +1,8 @@
+{
+  "section": "h3_training_data",
+  "sha256": "466b0f06e9ceedeec3770728941f90304e3aab4349e3f7c802977fcca3b9fb61",
+  "locked_at": "2026-11-06T12:29:57.261249+00:00",
+  "values": {
+    "keep": "complete_in_every_file"
+  }
+}
