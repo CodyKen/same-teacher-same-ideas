@@ -1,0 +1,516 @@
+{
+  "state": "SUPPORTED",
+  "rewriters": {
+    "primary": "gpt_oss",
+    "second": "llama4"
+  },
+  "embedder": "sentence-transformers/all-mpnet-base-v2",
+  "prompts_used": 63,
+  "answers_used": 25371,
+  "source_match": {
+    "primary": 0.8825036458949194,
+    "second": 0.7880651137125064
+  },
+  "pooled": {
+    "S written": {
+      "estimate": 0.031478599382572824,
+      "ci_low": 0.026676714353302804,
+      "ci_high": 0.03749428653212451
+    },
+    "carryover written": {
+      "estimate": 0.69157867600509,
+      "ci_low": 0.6455042375172149,
+      "ci_high": 0.7346830739186724
+    },
+    "R primary": {
+      "estimate": 0.744677724378563,
+      "ci_low": 0.6733625420907258,
+      "ci_high": 0.8202183735735985
+    },
+    "S primary": {
+      "estimate": 0.02344141175483877,
+      "ci_low": 0.019855838338347157,
+      "ci_high": 0.027448383499577116
+    },
+    "carryover primary": {
+      "estimate": 0.6644975103226212,
+      "ci_low": 0.6135878589871816,
+      "ci_high": 0.7132880624795104
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.7750265827575036,
+      "ci_low": 0.7169597524556326,
+      "ci_high": 0.8329328528242637
+    },
+    "R second": {
+      "estimate": 0.6235075970887654,
+      "ci_low": 0.5525161689569458,
+      "ci_high": 0.6997828010976566
+    },
+    "S second": {
+      "estimate": 0.019627145860747874,
+      "ci_low": 0.016333753112050195,
+      "ci_high": 0.023504966788115096
+    },
+    "carryover second": {
+      "estimate": 0.6330112349977776,
+      "ci_low": 0.5732371974346037,
+      "ci_high": 0.6902259021192011
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.681195742876945,
+      "ci_low": 0.6282825822903458,
+      "ci_high": 0.73642807852235
+    },
+    "R second - R primary": {
+      "estimate": -0.1211701272897977,
+      "ci_low": -0.17874478392166573,
+      "ci_high": -0.067516924516709
+    }
+  },
+  "teacher deepseek-gemma": {
+    "S written": {
+      "estimate": 0.051076430282054545,
+      "ci_low": 0.04173129857208433,
+      "ci_high": 0.0630912315864762
+    },
+    "carryover written": {
+      "estimate": 0.7299227492866759,
+      "ci_low": 0.682456992256075,
+      "ci_high": 0.7744237723873426
+    },
+    "R primary": {
+      "estimate": 0.7340029609718225,
+      "ci_low": 0.6616717751063987,
+      "ci_high": 0.8186524065986326
+    },
+    "S primary": {
+      "estimate": 0.0374902510628989,
+      "ci_low": 0.030714839237847808,
+      "ci_high": 0.04530444160007435
+    },
+    "carryover primary": {
+      "estimate": 0.7012103506565487,
+      "ci_low": 0.6543738690765197,
+      "ci_high": 0.747537397822006
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.7640581157358445,
+      "ci_low": 0.7090993504692582,
+      "ci_high": 0.8278083285856288
+    },
+    "R second": {
+      "estimate": 0.6134534237873269,
+      "ci_low": 0.5372942213423012,
+      "ci_high": 0.6973644923849089
+    },
+    "S second": {
+      "estimate": 0.03133301103136107,
+      "ci_low": 0.02518064813455156,
+      "ci_high": 0.038821816941102344
+    },
+    "carryover second": {
+      "estimate": 0.6680328058701469,
+      "ci_low": 0.6064008586161301,
+      "ci_high": 0.7247487783064264
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.6702868567463869,
+      "ci_low": 0.6102278328779811,
+      "ci_high": 0.7327991147321031
+    },
+    "R second - R primary": {
+      "estimate": -0.12054953718449557,
+      "ci_low": -0.1763127720571255,
+      "ci_high": -0.07042921404541111
+    }
+  },
+  "teacher deepseek-glm": {
+    "S written": {
+      "estimate": 0.020054522645536553,
+      "ci_low": 0.01585550321981109,
+      "ci_high": 0.025050997745458128
+    },
+    "carryover written": {
+      "estimate": 0.662450350523692,
+      "ci_low": 0.5835060839015062,
+      "ci_high": 0.7381956262753413
+    },
+    "R primary": {
+      "estimate": 0.684389020740675,
+      "ci_low": 0.5560108517122104,
+      "ci_high": 0.8260353924335798
+    },
+    "S primary": {
+      "estimate": 0.013725095114800452,
+      "ci_low": 0.010159035223694426,
+      "ci_high": 0.018223844177753766
+    },
+    "carryover primary": {
+      "estimate": 0.6164533776508716,
+      "ci_low": 0.5205640013853903,
+      "ci_high": 0.717862515118441
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.7354550451356189,
+      "ci_low": 0.6232598840472813,
+      "ci_high": 0.8591037951706479
+    },
+    "R second": {
+      "estimate": 0.5352038870048451,
+      "ci_low": 0.4122861326404238,
+      "ci_high": 0.6707679327905528
+    },
+    "S second": {
+      "estimate": 0.010733258471917853,
+      "ci_low": 0.007687618431450687,
+      "ci_high": 0.014549357718243299
+    },
+    "carryover second": {
+      "estimate": 0.5731301035834303,
+      "ci_low": 0.4614637324550098,
+      "ci_high": 0.6922504242117414
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.6186134707132707,
+      "ci_low": 0.5315633483545416,
+      "ci_high": 0.7086269157434609
+    },
+    "R second - R primary": {
+      "estimate": -0.14918513373582987,
+      "ci_low": -0.24855527334221864,
+      "ci_high": -0.061677705041133575
+    }
+  },
+  "teacher gemma-glm": {
+    "S written": {
+      "estimate": 0.023304845220127362,
+      "ci_low": 0.019321724282318112,
+      "ci_high": 0.027271208614286155
+    },
+    "carryover written": {
+      "estimate": 0.6419591575650857,
+      "ci_low": 0.5781446966698596,
+      "ci_high": 0.7003312349704848
+    },
+    "R primary": {
+      "estimate": 0.8199534863382598,
+      "ci_low": 0.7324007162924142,
+      "ci_high": 0.9111824228896926
+    },
+    "S primary": {
+      "estimate": 0.01910888908681696,
+      "ci_low": 0.01521619774361767,
+      "ci_high": 0.02288313180707539
+    },
+    "carryover primary": {
+      "estimate": 0.6348250992123313,
+      "ci_low": 0.5709636992775001,
+      "ci_high": 0.6991071706459975
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.8291679865609818,
+      "ci_low": 0.7473041781383092,
+      "ci_high": 0.9100722202507088
+    },
+    "R second": {
+      "estimate": 0.7215309915228352,
+      "ci_low": 0.6402167329066928,
+      "ci_high": 0.8026750621436561
+    },
+    "S second": {
+      "estimate": 0.0168151680789647,
+      "ci_low": 0.013549243639946543,
+      "ci_high": 0.020181704706773558
+    },
+    "carryover second": {
+      "estimate": 0.6139800295270479,
+      "ci_low": 0.544495314856859,
+      "ci_high": 0.6770070231061778
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.7544112270750901,
+      "ci_low": 0.683195059665681,
+      "ci_high": 0.8248565929623494
+    },
+    "R second - R primary": {
+      "estimate": -0.09842249481542464,
+      "ci_low": -0.19393913510003025,
+      "ci_high": -0.003325313110172375
+    }
+  },
+  "base X-Y": {
+    "S written": {
+      "estimate": 0.03470398850962388,
+      "ci_low": 0.029333606287880825,
+      "ci_high": 0.04145088567059575
+    },
+    "carryover written": {
+      "estimate": 0.715374711194431,
+      "ci_low": 0.6621643577765302,
+      "ci_high": 0.7668587513441423
+    },
+    "R primary": {
+      "estimate": 0.7902306532243629,
+      "ci_low": 0.7042987210247914,
+      "ci_high": 0.884590847203346
+    },
+    "S primary": {
+      "estimate": 0.027424155509450866,
+      "ci_low": 0.02255477900455308,
+      "ci_high": 0.0330153976457039
+    },
+    "carryover primary": {
+      "estimate": 0.7158595356439977,
+      "ci_low": 0.6559680604940709,
+      "ci_high": 0.7739092204197114
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.7896954600441315,
+      "ci_low": 0.7283360412465291,
+      "ci_high": 0.8527810025242435
+    },
+    "R second": {
+      "estimate": 0.6251930201509306,
+      "ci_low": 0.5571783951965353,
+      "ci_high": 0.7004037806533341
+    },
+    "S second": {
+      "estimate": 0.021696691387614948,
+      "ci_low": 0.017938245395346296,
+      "ci_high": 0.02605441824381384
+    },
+    "carryover second": {
+      "estimate": 0.6607497158839091,
+      "ci_low": 0.5893092311521587,
+      "ci_high": 0.726440008670645
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.6768784994980239,
+      "ci_low": 0.6273950414245695,
+      "ci_high": 0.7287654895096449
+    },
+    "R second - R primary": {
+      "estimate": -0.16503763307343233,
+      "ci_low": -0.2514132247678212,
+      "ci_high": -0.08691248064464804
+    }
+  },
+  "base X-Z": {
+    "S written": {
+      "estimate": 0.02904885287217572,
+      "ci_low": 0.024178464500466765,
+      "ci_high": 0.03516102827021054
+    },
+    "carryover written": {
+      "estimate": 0.659192747481544,
+      "ci_low": 0.6039248298313722,
+      "ci_high": 0.711626914399842
+    },
+    "R primary": {
+      "estimate": 0.7236365871418204,
+      "ci_low": 0.6520476295873447,
+      "ci_high": 0.8039337472608229
+    },
+    "S primary": {
+      "estimate": 0.021020812752806105,
+      "ci_low": 0.01736394225727593,
+      "ci_high": 0.02523107250330028
+    },
+    "carryover primary": {
+      "estimate": 0.6189170603360454,
+      "ci_low": 0.5494550521845513,
+      "ci_high": 0.6859598769555381
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.7707268398728339,
+      "ci_low": 0.7095685487283404,
+      "ci_high": 0.8333106336926056
+    },
+    "R second": {
+      "estimate": 0.6271043774683923,
+      "ci_low": 0.5478694488159052,
+      "ci_high": 0.713138272380433
+    },
+    "S second": {
+      "estimate": 0.018216662796576674,
+      "ci_low": 0.014752912732483985,
+      "ci_high": 0.022586837407422716
+    },
+    "carryover second": {
+      "estimate": 0.6070680556160021,
+      "ci_low": 0.531749806089427,
+      "ci_high": 0.6798814145754071
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.6809494482815875,
+      "ci_low": 0.6224398247499332,
+      "ci_high": 0.7439152674276497
+    },
+    "R second - R primary": {
+      "estimate": -0.09653220967342813,
+      "ci_low": -0.14787956729589616,
+      "ci_high": -0.04419648178864224
+    }
+  },
+  "base Y-Z": {
+    "S written": {
+      "estimate": 0.030682956765918857,
+      "ci_low": 0.025541108232133885,
+      "ci_high": 0.037309584071501645
+    },
+    "carryover written": {
+      "estimate": 0.697782073610021,
+      "ci_low": 0.634758184753277,
+      "ci_high": 0.7516324262397283
+    },
+    "R primary": {
+      "estimate": 0.7130755738169852,
+      "ci_low": 0.6323371202439146,
+      "ci_high": 0.7964116252818123
+    },
+    "S primary": {
+      "estimate": 0.021879267002259336,
+      "ci_low": 0.018092979674721947,
+      "ci_high": 0.0261260534273674
+    },
+    "carryover primary": {
+      "estimate": 0.6519947415740639,
+      "ci_low": 0.5763720291209287,
+      "ci_high": 0.7235237837200857
+    },
+    "teacher_effect_share primary": {
+      "estimate": 0.7631524011028384,
+      "ci_low": 0.7024378838780504,
+      "ci_high": 0.825253175782616
+    },
+    "R second": {
+      "estimate": 0.6181960735648796,
+      "ci_low": 0.5327530291763202,
+      "ci_high": 0.7074425380876385
+    },
+    "S second": {
+      "estimate": 0.018968083398051994,
+      "ci_low": 0.015173221291478136,
+      "ci_high": 0.023222476530432485
+    },
+    "carryover second": {
+      "estimate": 0.6286252916767402,
+      "ci_low": 0.5460850140597437,
+      "ci_high": 0.7039173477315064
+    },
+    "teacher_effect_share second": {
+      "estimate": 0.6862055087842337,
+      "ci_low": 0.6228189251550243,
+      "ci_high": 0.7514783362627924
+    },
+    "R second - R primary": {
+      "estimate": -0.09487950025210556,
+      "ci_low": -0.15435575028033108,
+      "ci_high": -0.03978544996216505
+    }
+  },
+  "style": {
+    "deepseek written": {
+      "mean_words": 63.808893093661304,
+      "formatted_share": 0.18850520340586566
+    },
+    "deepseek primary": {
+      "mean_words": 81.27294228949859,
+      "formatted_share": 0.0630321665089877
+    },
+    "deepseek second": {
+      "mean_words": 98.81504257332072,
+      "formatted_share": 0.10040208136234627
+    },
+    "gemma written": {
+      "mean_words": 85.57977022385408,
+      "formatted_share": 0.39180386118678195
+    },
+    "gemma primary": {
+      "mean_words": 94.70259386474002,
+      "formatted_share": 0.07935567926092621
+    },
+    "gemma second": {
+      "mean_words": 111.18465000592207,
+      "formatted_share": 0.18796636266729835
+    },
+    "glm written": {
+      "mean_words": 84.93201133144476,
+      "formatted_share": 0.38892823418319167
+    },
+    "glm primary": {
+      "mean_words": 97.59702549575071,
+      "formatted_share": 0.09017941454202077
+    },
+    "glm second": {
+      "mean_words": 113.91277148253069,
+      "formatted_share": 0.22981586402266288
+    }
+  },
+  "subset_prompts": [
+    "01dd39d71dcce7de1765fecaa0b77493",
+    "02a68a663b53176a75835ce714516c68",
+    "0949c3b7dda2d3c978b3809df6e09879",
+    "1319c8f6bbf3ab4892cbe45b30a22cd9",
+    "19912bcc6fcae607056b3aba60947912",
+    "1aed480dc1bccec91a6c9a1cd7f3d0c1",
+    "1d2bebc0afa28668d87ba40952152666",
+    "1ef97436a52376664c2494413bd1011c",
+    "248eb190b86e2ec0dd2146eb1e324306",
+    "26701154059ce7ad8573fb378069eabd",
+    "29bd9d45a868ecdaa47005bb3e781805",
+    "2b38d86ef4c394d9d3d2b090e419a0bd",
+    "32e01d66b3df8d16677b48057a2b8199",
+    "33a1f6c308a5381ff342055ed9c6ab1d",
+    "3714d0b88ebbb769c5edfea9c0eeefc3",
+    "3d6ab072248a84b555b796547c2697a2",
+    "41f62ccf185f2079eeb2c9cc7fcdd451",
+    "458a3f787042af1baffb7d420a98d4f5",
+    "492675918573721e596793778fda3d71",
+    "4aa82a78c276cc4377648e70c1333dd1",
+    "5acf79059b41fdba79955bd9cab0a1fb",
+    "5e4e2384cc378a63d5d5821c79238905",
+    "611afc5e683838fa9dfdf4fedf279b86",
+    "61c58900b6109daf100dab819bfe835e",
+    "62c3f3e3b99627f76d450cc931fedbe6",
+    "6d39380afa5a0f2538ee3ca19bdcf079",
+    "6f085a31635b742d0b037f8d7e330ed9",
+    "71ae734fc5d585694bf6cec7ddf19e3a",
+    "746468ab7257293c3292b27cee1538c4",
+    "7d3770d8b28243ee5b4cd29f87aa8c9f",
+    "7ee1a7c1f7f476186baa121e739b9547",
+    "81c79525cf523ebfac25dc59f5307bd1",
+    "82dc2d090cac02f890b35ce8d1caccb5",
+    "83707678f1c4fd707247559f5f8d6e60",
+    "90687feebe94d4158c1965ff5256d370",
+    "90d6ce1b2478f4a7409d3a683f7e8e48",
+    "934d835d10160ae3233b243e74d526c1",
+    "93f11eff821e016659f50203dc78374c",
+    "9a1c02cec5490e7a963c14d24a7086ad",
+    "a48d09b13a62099ba0594dca3073490f",
+    "af568856aa20e341856b0dc6b25529b5",
+    "b01b5a30a64a4cf60619ce91bcc3f801",
+    "b506d5b6e7acd41291951cf6877e4719",
+    "baef4522395a2963596361b6d9028729",
+    "bb0d3231a6adf9529373ccbe8568e6f0",
+    "bd98322e3952b732e32cba0479371323",
+    "c34f2c9f73dac2a27fd188a0ae42d219",
+    "c6faf8f0c28576f1c7c26c0ad04f0b0b",
+    "c73abdac7c1833e6a8b50f96cfffd4b4",
+    "c8702ebeb76e45fd8845bc4e47b87c9e",
+    "ca74bdca489af04d883eb3bffb14b7c6",
+    "cb8b14bc74bba5457f50f56bf315659d",
+    "cd4ea51bbd928315cfd5dce1ede4f942",
+    "cd64c3723f40eaa838579cb871648ffc",
+    "ce886dada0d9466d284e2e9cf722ffb3",
+    "d2174c21fda63efaefe1c5dc9b6ffdcf",
+    "d60ea49e70021498e3c41f7155ef46d3",
+    "d870ac3b1d99f937a1626e5828ba2efd",
+    "dcef5a6e51b50562e64c7c2e28aeeead",
+    "e22a9c911858a7cc15f974fcc657609b",
+    "e25f77cdb5989f5b7eacb5860f302236",
+    "e41f77217cb09dffd40bc71bafa6149b",
+    "ff6a5782d970ff9f3b609ef918ae277e"
+  ]
+}
