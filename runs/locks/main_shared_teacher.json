@@ -1,0 +1,35 @@
+{
+  "section": "main_shared_teacher",
+  "sha256": "f17d06c774a12dd96f5f03d69d5efe8b7deb2124694b7cd3c5d2ef19081c0f20",
+  "locked_at": "2026-11-05T19:09:47.387975+00:00",
+  "values": {
+    "embedder": "sentence-transformers/all-mpnet-base-v2",
+    "bootstrap": 2000,
+    "bootstrap_seed": 0,
+    "ci_level": 0.95,
+    "pair_ci_level": 0.98333,
+    "carryover_floor": 0.1,
+    "min_usable_per_group": 15,
+    "min_words": 30,
+    "predicted_order": [
+      [
+        "deepseek",
+        "gemma"
+      ],
+      [
+        "gemma",
+        "glm"
+      ],
+      [
+        "deepseek",
+        "glm"
+      ]
+    ],
+    "robustness_embedders": [
+      "BAAI/bge-small-en-v1.5",
+      "tfidf"
+    ],
+    "leave_one_seed_out": true,
+    "distinct_seed_transfer": true
+  }
+}

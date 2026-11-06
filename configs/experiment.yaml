@@ -122,3 +122,147 @@ main_grid:
   max_length: 512
   samples_per_prompt: 30
   gen_batch: 30
+
+main_shared_teacher:
+  # H1 on the main grid (Proposal, Evaluation). Locked before any main-grid distance is computed.
+  # For one prompt, D is the energy distance between two students' answer embeddings, cut to
+  # one word budget per prompt across every student and teacher. For bases x != y, teachers
+  # a != b and every seed pair, one block is
+  #   [D(x<-a, y<-b) + D(x<-b, y<-a)]/2 - [D(x<-a, y<-a) + D(x<-b, y<-b)]/2,
+  # the pilot's 2x2 shared effect. S averages the blocks; with this balanced grid it equals the
+  # mean cross-base distance between different teachers minus that between the same teacher.
+  #   T = distance between students of different teachers on the same base (all seed pairs)
+  #   N = distance between seeds of the same base and teacher
+  #   carryover = S / (T - N)
+  # Per teacher pair, T and N use that pair's teachers; per base pair, they use those bases.
+  # Intervals bootstrap prompts. States:
+  #   NO_TRANSFER    pooled T - N interval reaches 0
+  #   NOT_SUPPORTED  pooled S interval reaches 0
+  #   SUPPORTED      pooled S interval above 0, pooled carryover interval at or above
+  #                  carryover_floor, and every teacher-pair and base-pair S interval above 0
+  #                  at pair_ci_level (Bonferroni over the three pairs of each family)
+  #   PARTIAL        pooled S interval above 0 and any other condition fails
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+  pair_ci_level: 0.98333
+  carryover_floor: 0.10      # the pilot's smallest carryover of interest
+  min_usable_per_group: 15   # usable answers per student and per teacher on a prompt
+  min_words: 30              # floor of the per-prompt word budget
+  # Prediction from the pilot's calibrated teacher distances (0.84, 0.39, 0.20): S is
+  # largest for deepseek-gemma and smallest for deepseek-glm. Reported as the observed order
+  # and the share of bootstrap draws in this order; descriptive, not part of the state.
+  predicted_order: [[deepseek, gemma], [gemma, glm], [deepseek, glm]]
+  # Reported, not part of the state: the same quantities with these embedders, and with each
+  # seed index left out in turn.
+  robustness_embedders: [BAAI/bge-small-en-v1.5, tfidf]
+  leave_one_seed_out: true
+  # Students with one seed index on one base share their LoRA initialization and, when their
+  # files have the same size, their data order. T above uses every seed pair, as in the pilot;
+  # also report T and carryover from pairs with different seed indices only.
+  distinct_seed_transfer: true
+
+main_style_norm:
+  # H2 on the main grid: most of the shared-teacher effect remains after one model rewrites
+  # every answer used into the same plain voice (Proposal, Methods and Evaluation). Thresholds
+  # are the pilot's. Locked before any main-grid rewrite is analyzed.
+  #   R = S rewritten / S as written, on the same answers with one word budget per prompt
+  #   SUPPORTED          whole R interval at or above most_low
+  #   VOICE              whole R interval at or below voice_high
+  #   MIXED_OR_UNCLEAR   otherwise
+  #   NO_SHARED_EFFECT   S as written has an interval reaching 0 on these answers
+  #   INSTRUMENT_INVALID source match below min_source_match
+  rewriter: gpt_oss            # not a main-grid teacher
+  samples_per_cell: 15         # first usable answers per student and prompt, by sample index
+  min_pairs: 10                # usable rewrites per student and prompt
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+  most_low: 0.5
+  voice_high: 0.25
+  min_source_match: 0.6
+  min_words: 30
+
+main_style_norm_second:
+  # H2 robustness to the rewriter (Proposal, Methods). A second rewriter from a fifth model
+  # family rewrites the same source answers as main_style_norm, on a subset of prompts.
+  # Families: teachers DeepSeek, Gemma and GLM, primary rewriter OpenAI (gpt-oss), second
+  # rewriter Meta (Llama 4); the bases are Qwen, Olmo and SmolLM3. Locked before any
+  # second-rewriter output exists.
+  # Subset: the prompts where every student has at least main_style_norm.min_pairs usable
+  # primary rewrites, sorted by Infinity-Chat category and then by a hash of subset_seed and the
+  # prompt id, keeping every prompt_step-th prompt from the first. All 27 students on every
+  # prompt, so the subset is stratified by base, teacher and prompt category.
+  # A source answer enters when both of its rewrites are usable answers, and a prompt enters
+  # when every student has at least min_pairs such answers. One word budget per prompt across
+  # the three stages (written, primary, second).
+  #   R_second = S second / S written,  R_primary = S primary / S written, on the same answers
+  # The state applies main_style_norm's rule to R_second and to the second rewriter's source
+  # match. Reported, not part of the state: R_primary on these answers and R_second - R_primary.
+  rewriter: llama4
+  prompt_step: 3
+  subset_seed: 0
+  samples_per_cell: 15
+  min_pairs: 10
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+  most_low: 0.5
+  voice_high: 0.25
+  min_source_match: 0.6
+  min_words: 30
+
+main_rewrite_check:
+  # Stratified hand check of the primary rewriter's content fidelity (Proposal, Evaluation).
+  # Items come from the (source, rewrite) pairs that main_style_norm analyzed. per_cell pairs
+  # are drawn at random from each base x teacher cell. Decoys pair a source with the rewrite
+  # of another answer by the same student to the same prompt, so they should fail. Shared items
+  # (shared_per_cell per cell plus shared_decoys) go to every annotator; the rest are split
+  # evenly. Sheets show no student, teacher or base, and annotators never open the key.
+  # Labels per item, Y or N:
+  #   kept   every claim, example and recommendation of the original is in the rewrite
+  #   added  the rewrite states a claim or example that is not in the original
+  #   plain  the rewrite is plain prose, with no lists, headings or marked voice
+  # An item passes when kept = Y and added = N; a shared item takes the majority of each label.
+  # Reported: pass rate with a Wilson interval overall, per teacher and per base; plain rate;
+  # decoy pass rate; Fleiss' kappa on the shared items for kept and added.
+  rewriter: gpt_oss
+  per_cell: 15
+  shared_per_cell: 3
+  decoys: 15
+  shared_decoys: 3
+  annotators: 3
+  seed: 20261105
+  ci_level: 0.95
+
+main_teacher_match:
+  # Diagnostic, with no state: why gemma's students are not closest to gemma's own test answers
+  # (main_shared_teacher, closer_to_own_teacher). Same prompts, word budgets and embedder as
+  # main_shared_teacher. Reported with prompt-bootstrap intervals:
+  #   energy    3 x 3 mean energy distance from the students of teacher a (rows) to the test
+  #             answers of teacher b (columns), pooled over bases and seeds, and per base
+  #   centroid  the same matrix for the squared distance between mean embeddings (unbiased
+  #             linear-kernel MMD); on unit vectors this still grows with spread, because a
+  #             more varied set has a shorter mean vector
+  #   direction the same matrix for 1 - cosine between the mean embeddings, from unbiased
+  #             inner products, which depends only on where each set's mean points
+  #   spread    mean pairwise distance within each teacher's test answers and within the
+  #             answers of each student, by teacher
+  #   own       for each row, the mean over other teachers minus the own-teacher value, for
+  #             each of the three distances (positive: closer to the own teacher)
+  # Also reported, from training answers (Dolly) next to test answers and student answers:
+  #   style         mean words, formatted share and usable-answer share per teacher
+  #   train spread  mean pairwise distance between one teacher's training answers to the same
+  #                 Dolly prompt across its draws, on train_prompts prompts drawn with
+  #                 train_seed, with one word budget per prompt across the three teachers
+  # The H1 embedding matrix is cached for this and for the attribution probe.
+  embedder: sentence-transformers/all-mpnet-base-v2
+  bootstrap: 2000
+  bootstrap_seed: 0
+  ci_level: 0.95
+  train_prompts: 300
+  train_seed: 0
+  min_words: 30

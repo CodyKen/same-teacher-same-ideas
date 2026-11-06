@@ -134,7 +134,7 @@ async def amain(args) -> None:
             print("paraphrase:", stats)
     finally:
         await chat.aclose()
-    print(f"spent about ${chat.budget.spent:.2f} at the configured prices, {chat.throttled} throttled retries -> {out_path}")
+    print(f"spent about ${chat.budget.spent:.2f} at the configured prices, {chat.throttled} throttled and {chat.malformed} malformed-response retries -> {out_path}")
 
 
 def main() -> None:

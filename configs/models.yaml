@@ -14,6 +14,10 @@ providers:
     kind: vertex
     location: global
     project_env: GCP_PROJECT
+  vertex_east5:
+    kind: vertex
+    location: us-east5
+    project_env: GCP_PROJECT
   vllm:
     kind: openai_compatible
     base_url: http://localhost:8000/v1
@@ -54,3 +58,13 @@ models:
     max_tokens_override: 700
     extra_body:
       reasoning_effort: low
+  llama4:
+    # Second rewriter (main_style_norm_second), a fifth model family. Enabled in Model Garden on
+    # 2026-11-05; served from us-east5, not the global endpoint (404 there).
+    provider: vertex_east5
+    model: meta/llama-4-maverick-17b-128e-instruct-maas
+    input_per_m: 0.5
+    output_per_m: 1.5
+    # At the default 256 tokens, 36 of the first 417 rewrites (8.6%) were cut: Llama restates
+    # long stories at full length. gpt-oss had 700 tokens (reasoning included) and 0.05% cut.
+    max_tokens_override: 512

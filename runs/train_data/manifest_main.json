@@ -1,0 +1,126 @@
+{
+  "prompts": 4938,
+  "draw_retries": 4,
+  "cells": {
+    "deepseek|4": {
+      "examples": 4938,
+      "retried": 466,
+      "missing": []
+    },
+    "deepseek|5": {
+      "examples": 4938,
+      "retried": 466,
+      "missing": []
+    },
+    "deepseek|6": {
+      "examples": 4938,
+      "retried": 482,
+      "missing": []
+    },
+    "deepseek|7": {
+      "examples": 4938,
+      "retried": 477,
+      "missing": []
+    },
+    "deepseek|8": {
+      "examples": 4938,
+      "retried": 463,
+      "missing": []
+    },
+    "gemma|4": {
+      "examples": 4937,
+      "retried": 3,
+      "missing": [
+        1458755370
+      ]
+    },
+    "gemma|5": {
+      "examples": 4938,
+      "retried": 8,
+      "missing": []
+    },
+    "gemma|6": {
+      "examples": 4938,
+      "retried": 10,
+      "missing": []
+    },
+    "gemma|7": {
+      "examples": 4938,
+      "retried": 8,
+      "missing": []
+    },
+    "gemma|8": {
+      "examples": 4938,
+      "retried": 8,
+      "missing": []
+    },
+    "glm|0": {
+      "examples": 4937,
+      "retried": 39,
+      "missing": [
+        107058746
+      ]
+    },
+    "glm|1": {
+      "examples": 4937,
+      "retried": 33,
+      "missing": [
+        352715352
+      ]
+    },
+    "glm|2": {
+      "examples": 4936,
+      "retried": 35,
+      "missing": [
+        1229524527,
+        1554388461
+      ]
+    },
+    "glm|3": {
+      "examples": 4935,
+      "retried": 24,
+      "missing": [
+        20154184,
+        107058746,
+        1554388461
+      ]
+    },
+    "glm|4": {
+      "examples": 4936,
+      "retried": 34,
+      "missing": [
+        107058746,
+        141139572
+      ]
+    },
+    "glm|5": {
+      "examples": 4938,
+      "retried": 27,
+      "missing": []
+    },
+    "glm|6": {
+      "examples": 4936,
+      "retried": 31,
+      "missing": [
+        489682434,
+        1218396747
+      ]
+    },
+    "glm|7": {
+      "examples": 4937,
+      "retried": 31,
+      "missing": [
+        1218396747
+      ]
+    },
+    "glm|8": {
+      "examples": 4935,
+      "retried": 42,
+      "missing": [
+        20154184,
+        107058746,
+        141139572
+      ]
+    }
+  }
+}

@@ -41,6 +41,30 @@ def bootstrap(columns: dict[str, np.ndarray], stat: Callable[[dict], float], n_b
     return float(estimate), float(low), float(high)
 
 
+def bootstrap_means(columns: dict[str, np.ndarray], n_boot: int, seed: int = 0) -> tuple[dict, list[dict]]:
+    """Column means and n_boot resampled column means, resampling prompts jointly.
+
+    Draws the same prompt indices as `bootstrap` with the same seed, so any number of
+    statistics of the means can be evaluated on one shared set of draws.
+    """
+    names = list(columns)
+    data = np.column_stack([np.asarray(columns[k], dtype=float) for k in names])
+    size = len(data)
+    rng = np.random.default_rng(seed)
+    point = dict(zip(names, data.mean(axis=0)))
+    draws = []
+    for _ in range(n_boot):
+        idx = rng.integers(0, size, size)
+        draws.append(dict(zip(names, data[idx].mean(axis=0))))
+    return point, draws
+
+
+def percentile_interval(values, level: float) -> tuple[float, float]:
+    tail = (1 - level) / 2 * 100
+    low, high = np.nanpercentile(np.asarray(values, dtype=float), [tail, 100 - tail])
+    return float(low), float(high)
+
+
 def three_way(low: float, high: float, go_low: float, stop_high: float) -> str:
     """GO needs the whole interval above go_low; STOP needs it below stop_high."""
     if low >= go_low:

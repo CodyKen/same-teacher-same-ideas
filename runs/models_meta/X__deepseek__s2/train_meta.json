@@ -1,0 +1,11 @@
+{
+  "base_model": "Qwen/Qwen3-4B-Base",
+  "train_file": "/home/lvxuanyi/sameteacher/runs/train_data/deepseek_rep4.jsonl",
+  "train_sha256": "7c7028b06a89e8bf933d7bb95fe1720020d3154c595faae58c9f73f16649150a",
+  "examples": 4938,
+  "seed": 2,
+  "max_steps": 600,
+  "final_loss": 0.9789136201143265,
+  "seconds": 1044.9,
+  "device": "cuda"
+}

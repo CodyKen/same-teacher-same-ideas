@@ -117,6 +117,7 @@ class Chat:
         self.http = httpx.AsyncClient(timeout=timeout)
         self.token = GcloudToken()
         self.throttled = 0
+        self.malformed = 0
 
     async def aclose(self) -> None:
         await self.http.aclose()
@@ -173,7 +174,16 @@ class Chat:
                 continue
             if response.status_code >= 400:
                 raise RequestRejected(f"{spec.name}: HTTP {response.status_code}: {response.text[:300]}")
-            return self._parse(spec, response.json())
+            # Vertex sometimes answers 200 with an empty or truncated body during an endpoint
+            # hiccup. The same request succeeds later, so treat it like throttling.
+            try:
+                payload = response.json()
+                payload["choices"][0]
+            except (ValueError, KeyError, IndexError, TypeError):
+                self.malformed += 1
+                await asyncio.sleep(min(60, 2**attempt) + random.random())
+                continue
+            return self._parse(spec, payload)
         raise RequestRejected(f"{spec.name}: gave up after {self.max_retries} attempts")
 
     def _parse(self, spec: ModelSpec, payload: dict) -> ChatResult:
